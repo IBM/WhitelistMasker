@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE PROJECT> <!-- stops the "no grammar" validation error -->
+
+<!-- * IBM Confidential -->
+<!-- * OCO Source Materials -->
+<!-- * WILD Watson Implicit Learning for Dialog -->
+<!-- * -->
+<!-- * (C) Copyright IBM Corporation 2018. All rights reserved. -->
+<!-- * -->
+<!-- * The source code for this program is not published or otherwise -->
+<!-- * divested of its trade secrets, irrespective of what has been -->
+<!-- * deposited with the U.S. Copyright Office. -->
+
+<Configuration status="INFO" monitorInterval="10">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{ABSOLUTE}(%C{1}) %-5p: %m     -- %M:%L:%t%n" />
+		</Console>
+		<RollingFile name="RollingFile"
+			fileName="${sys:WILD_HOME}/logs/wild.log"
+			filePattern="${sys:WILD_HOME}/logs/wild-log-%d{yyyy-MM-dd}-%i.gz">
+			<PatternLayout
+				pattern="%d{ISO8601}(%C{1}) %-5p: %m     -- %%M:%L:%n%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10"
+				compressionLevel="9" />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="com.ibm.wild" additivity="false" level="info">
+			<Appender-Ref ref="Console" />
+			<Appender-Ref ref="RollingFile" />
+		</Logger>
+		<Logger name="org.apache.commons" additivity="false"
+			level="error">
+			<Appender-Ref ref="RollingFile" />
+		</Logger>
+		<Logger name="org.openrdf" additivity="false" level="error">
+			<Appender-Ref ref="RollingFile" />
+		</Logger>
+		<Logger name="o.o" additivity="false" level="error">
+			<Appender-Ref ref="RollingFile" />
+		</Logger>
+		<Logger name="o.a" additivity="false" level="error">
+			<Appender-Ref ref="RollingFile" />
+		</Logger>
+		<Logger name="org.xml" additivity="false" level="error">
+			<Appender-Ref ref="RollingFile" />
+		</Logger>
+		<Root level="warn">
+			<Appender-Ref ref="Console" />
+			<Appender-Ref ref="RollingFile" />
+		</Root>
+	</Loggers>
+</Configuration>
+

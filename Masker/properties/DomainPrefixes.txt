@@ -1,0 +1,31 @@
+_ modified to me more lax for URLs by adding the _ prefix
+1
+2
+3
+4
+5
+6
+7
+8
+9
+_ account.box.com
+_ app.box
+_ https://
+_ ibm
+login.w3
+_ na.artifactory.swg-devops.com
+_ notes
+_ urldefense
+_ w3
+_ wd5.myworkday.com
+_ webex.com
+_
+_ Telstra Stuff
+startrack.com.au
+192.
+144.
+10.
+92.
+auspost.com
+msto.startrack.com
+sttrackandtrace.startrack.com.au

@@ -1,0 +1,80 @@
+{
+  "schema":{
+    "comment":"Below are the different services supported by MaskWebServices",
+    "Masker":{
+      "name":"Mask REST Services",
+      "requests":{
+        "comment":"create sections for get, put, post, and delete, then create their services with actions and response",
+        "get":{
+          "HelloMasker":{
+            "actions":[{
+                "params":[],
+                "class":"com.whitelistmasker.services.MaskHelloService",
+                "method":"doHello",
+                "return":"response",
+                "publish":[]
+              }
+            ],
+            "response":"response"
+          },
+          "login/userid":{
+            "actions":[{
+                "params":[],
+                "class":"com.whitelistmasker.services.MaskHelloService",
+                "method":"doHello",
+                "return":"response",
+                "publish":[]
+              }
+            ],
+            "response":"response"
+          }
+        },
+        "patch":{
+        },
+        "put":{
+        },
+        "post":{
+         "masker/HelloMasker":{
+            "actions":[{
+                "params":[],
+                "class":"com.whitelistmasker.services.MaskHelloService",
+                "method":"doHello",
+                "return":"response",
+                "publish":[]
+              }
+            ],
+            "response":"response"
+          },
+          "masker/doMasking":{
+            "actions":[{
+                "comment":"Submitted object containing an array of unmasked Strings, an optional array of templates, and an optional maskNumbers Boolean, and will return a masked array and an  error array in the response",
+                "params":["request:com.api.json.JSONObject"
+                ],
+                "class":"com.whitelistmasker.masker.Masker",
+                "method":"maskContent",
+                "return":"results",
+                "publish":[]
+              }
+            ],
+            "response":"results"
+          },
+          "masker/updateMasks":{
+            "actions":[{
+                "comment":"Submitted object containing an array of updates, and an array of removals,  each  array containing objects with a template and a mask",
+                "params":["request:com.api.json.JSONObject"
+                ],
+                "class":"com.whitelistmasker.masker.Masker",
+                "method":"updateMaskTemplates",
+                "return":"results",
+                "publish":[]
+              }
+            ],
+            "response":"results"
+          }
+        },
+        "delete":{
+        }
+      }
+    }
+  }
+}

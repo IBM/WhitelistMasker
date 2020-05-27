@@ -1,0 +1,9 @@
+this has two emails: wnm3@us.ibm.com and lastrasl@us.ibm.com
+this has a name: Nathaniel Mills
+this has a number: 123
+456 started with a number
+Nat started with a name
+Connecticut started with a geographic reference
+https://ibm.webex.com/join/wnm3 started with a url
+This has an unrecognizable word (hereitis) <- there
+Here are some US phone numbers: 8608125089, 860.812.5089, 860-8125089, 860.812-5089, +1 (860)812-5089 and another +18608125089
