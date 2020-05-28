@@ -86,8 +86,6 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.jboss.weld</groupId> <artifactId>weld-core</artifactId> 
-			<version>2.4.5.Final</version> </dependency> -->
 		<dependency>
 			<groupId>com.whitelistmasker</groupId>
 			<artifactId>Masker</artifactId>
