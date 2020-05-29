@@ -18,7 +18,7 @@ Each project can be  built by using the  command line: **mvn clean install** com
 Content has been build using the Open  JDK version 1.8.0_242_b08 available  for download from https://adoptopenjdk.net/
 
 ### Eclipse Version
-Projects  were developed in Ecilpse 2020-03 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.
+Projects  were developed in Eclipse 2020-03 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.
 
 ## Masker Project
 The Masker project provides the **Masker** class that enables a command  line interface to read a directory of JSON formatted dialog files to  mask their content. There is also a **MakeWhitelist** class to update the whitelist-words.json file used for  masking. The latter reads content from the properties directory and writes the updated content to the same properties directory. The jar file build in this project is used by the MaskWebServices project. 
