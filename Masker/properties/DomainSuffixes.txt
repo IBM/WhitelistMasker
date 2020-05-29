@@ -1,25 +1,9 @@
 _ removed domains to add more IBM internal sites using _ prefix
-_ bit.ly
 checkcoverage.apple.com
-_cl.ly
 collabserv.com
-_dalseal
 ibm.account.box.com
 ibm.app.box.com
-_ibmaspera.com
-_ibm.biz
 ibm.box.com
-_ibm.co
-_ibm.com
-_ibm.ent.1password.com
-_ibm.ent.1password.com.1password.com
-_ibm.ent.box.com
-_ibm.medallia.com
-_ibm.nomadic.exchange
-_ibm.northernlight.com
-_ibm.pagerduty.com
-_ibm.seismic.com
-_ibm.webe.com
 ibm.webex
 ibm.webex.com
 ibm.webx.com
@@ -27,15 +11,6 @@ ibm2.webx.com
 ibm2.webex
 ibm2.webex.com
 ibmcmd.com
-_idaccesshub.com
-_maas360.com
-_mass360.com
-_m.dm
-_m.dm.ibm
-_slack.com
-_softlayer.com
-_w3.ibm
-_w3ibm.mybluemix.net
 zoom.com
 zoom.us
 _

@@ -1075,13 +1075,13 @@ public class MaskerDate extends Date implements Cloneable, Serializable {
 	 * Compares this date with the supplied date and returns -1 if this date is less
 	 * than the supplied date, 0 if equal, or 1 if greater than the supplied date.
 	 * 
-	 * @param aaiDate
+	 * @param date
 	 *                the date to compare against this date
 	 * @return -1 if this date is less than the supplied date, 0 if equal, or 1 if
 	 *         greater than the supplied date.
 	 */
-	public int compareTo(MaskerDate aaiDate) {
-		return super.compareTo(aaiDate);
+	public int compareTo(MaskerDate date) {
+		return super.compareTo(date);
 	}
 
 	// /*

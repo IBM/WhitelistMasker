@@ -8,7 +8,7 @@
         <feature>jaxrs-2.1</feature>
     </featureManager>
 
-<cors allowCredentials="true" allowedHeaders="accept" allowedMethods="GET, DELETE, POST, PUT" allowedOrigins="http://localhost:9081" domain="/AidenWebServices" maxAge="3600"/>
+<cors allowCredentials="true" allowedHeaders="accept" allowedMethods="GET, DELETE, POST, PUT" allowedOrigins="http://localhost:9080" domain="/MaskWebServices" maxAge="3600"/>
   
 	<!-- USER REGISTRIES (using passw0rd) -->
 	<basicRegistry id="basic" realm="BasicRealm">

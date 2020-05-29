@@ -1648,7 +1648,7 @@ public class Masker implements Serializable {
 	 *         passed counts object as well)
 	 * @throws Exception
 	 */
-	String maskMessage(String msg, JSONObject counts, int msgCount) throws Exception {
+	static public String maskMessage(String msg, JSONObject counts, int msgCount) throws Exception {
 
 		Pattern pattern = null;
 		Matcher matcher = null;
