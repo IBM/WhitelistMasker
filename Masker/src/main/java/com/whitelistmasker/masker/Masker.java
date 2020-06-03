@@ -114,7 +114,7 @@ public class Masker implements Serializable {
 	static String _geolocationsFileName = "." + File.separator + "geolocations.json";
 	static String _initializing = "Initializing";
 	static boolean _isInitialized = false;
-	static String _maskBad = "$bad$";
+	static String _maskBad = "~bad~";
 	static Map<String, Integer> _maskedWords = new HashMap<String, Integer>();
 	static String _maskGeo = "~geo~";
 	static String _maskMisc = "~misc~";
