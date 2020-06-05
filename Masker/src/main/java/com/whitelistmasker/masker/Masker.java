@@ -106,12 +106,15 @@ public class Masker implements Serializable {
 		}
 	}
 
-	static String _domainPrefixesFile = "." + File.separator + "DomainPrefixes.txt";
+	static String _domainPrefixesFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "DomainPrefixes.txt";
 	static List<String> _domainPrefixList = new ArrayList<String>();
-	static String _domainSuffixesFile = "." + File.separator + "DomainSuffixes.txt";
+	static String _domainSuffixesFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "DomainSuffixes.txt";
 	static List<String> _domainSuffixList = new ArrayList<String>();
 	static JSONObject _geolocations = new JSONObject();
-	static String _geolocationsFileName = "." + File.separator + "geolocations.json";
+	static String _geolocationsFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "geolocations.json";
 	static String _initializing = "Initializing";
 	static boolean _isInitialized = false;
 	static String _maskBad = "~bad~";
@@ -123,18 +126,22 @@ public class Masker implements Serializable {
 	static Boolean _maskNumbers = Boolean.TRUE;
 	static String _maskPrefix = "~";
 	static List<String> _masks = new ArrayList<String>();
-	static String _maskTemplatesFile = "." + File.separator + "maskTemplates.json";
+	static String _maskTemplatesFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "maskTemplates.json";
 	static String _maskURL = "~url~";
 	static int _minDialogs = 5;
 	static JSONObject _names = new JSONObject();
-	static String _namesFileName = "." + File.separator + "names.json";
+	static String _namesFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + "names.json";
 	static List<Pattern> _patterns = new ArrayList<Pattern>();
 	static JSONObject _profanities = new JSONObject();
-	static String _profanitiesFileName = "." + File.separator + "profanities.json";
-	static String _queryStringContainsFile = "." + File.separator + "QueryStringContains.txt";
+	static String _profanitiesFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "profanities.json";
+	static String _queryStringContainsFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "QueryStringContains.txt";
 	static List<String> _queryStringContainsList = new ArrayList<String>();
 	static JSONObject _whitelist = new JSONObject();
-	static String _whitelistFileName = "." + File.separator + "whitelist-words.json";
+	static String _whitelistFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
+			+ "whitelist-words.json";
 	static final int INDEX_BACKSLASH = 0x4000;
 	static final int INDEX_COLON = 0x0080;
 	static final int INDEX_COMMA = 0x0400;
@@ -236,47 +243,47 @@ public class Masker implements Serializable {
 		synchronized (_initializing) {
 			try {
 				_whitelist = (JSONObject) MaskerUtils
-						.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + _whitelistFileName);
+						.loadJSONFile(_whitelistFileName);
 				if (_whitelist == null) {
 					System.out.println("Can not find the whitelist key in the file " + MaskerConstants.Masker_DIR_PROPERTIES
 							+ _whitelistFileName);
 					return false;
 				}
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _whitelistFileName + ": "
+				System.out.println("Error loading file " + _whitelistFileName + ": "
 						+ e.getLocalizedMessage());
 				e.printStackTrace();
 				return false;
 			}
 			try {
-				_names = (JSONObject) MaskerUtils.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + _namesFileName);
+				_names = (JSONObject) MaskerUtils.loadJSONFile(_namesFileName);
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _namesFileName + ": "
+				System.out.println("Error loading file " + _namesFileName + ": "
 						+ e.getLocalizedMessage());
 				e.printStackTrace();
 				return false;
 			}
 			try {
 				_geolocations = (JSONObject) MaskerUtils
-						.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + _geolocationsFileName);
+						.loadJSONFile(_geolocationsFileName);
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _geolocationsFileName
+				System.out.println("Error loading file " + _geolocationsFileName
 						+ ": " + e.getLocalizedMessage());
 				e.printStackTrace();
 				return false;
 			}
 			try {
 				_profanities = (JSONObject) MaskerUtils
-						.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + _profanitiesFileName);
+						.loadJSONFile(_profanitiesFileName);
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _profanitiesFileName
+				System.out.println("Error loading file " + _profanitiesFileName
 						+ ": " + e.getLocalizedMessage());
 				e.printStackTrace();
 				return false;
 			}
 			try {
 				List<String> domainPrefixList = MaskerUtils
-						.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + _domainPrefixesFile);
+						.loadTextFile(_domainPrefixesFile);
 				for (String domainPrefix : domainPrefixList) {
 					if (domainPrefix.startsWith("_")) {
 						continue;
@@ -284,13 +291,13 @@ public class Masker implements Serializable {
 					_domainPrefixList.add(domainPrefix.toLowerCase());
 				}
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _domainPrefixesFile
+				System.out.println("Error loading file " + _domainPrefixesFile
 						+ ": " + e.getLocalizedMessage());
 				return false;
 			}
 			try {
 				List<String> domainSuffixList = MaskerUtils
-						.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + _domainSuffixesFile);
+						.loadTextFile(_domainSuffixesFile);
 				for (String domainSuffix : domainSuffixList) {
 					if (domainSuffix.startsWith("_")) {
 						continue;
@@ -298,13 +305,13 @@ public class Masker implements Serializable {
 					_domainSuffixList.add(domainSuffix.toLowerCase());
 				}
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _domainSuffixesFile
+				System.out.println("Error loading file " + _domainSuffixesFile
 						+ ": " + e.getLocalizedMessage());
 				return false;
 			}
 			try {
 				List<String> queryStringContainsList = MaskerUtils
-						.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + _queryStringContainsFile);
+						.loadTextFile(_queryStringContainsFile);
 				for (String queryStringContains : queryStringContainsList) {
 					if (queryStringContains.startsWith("_")) {
 						continue;
@@ -312,14 +319,14 @@ public class Masker implements Serializable {
 					_queryStringContainsList.add(queryStringContains.toLowerCase());
 				}
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _queryStringContainsFile
+				System.out.println("Error loading file " + _queryStringContainsFile
 						+ ": " + e.getLocalizedMessage());
 				return false;
 			}
 
 			try {
 				JSONObject maskTemplates = MaskerUtils
-						.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + _maskTemplatesFile);
+						.loadJSONFile(_maskTemplatesFile);
 				Object test = maskTemplates.get("maskNumbers");
 				if (test != null && test instanceof Boolean) {
 					_maskNumbers = (Boolean) test;
@@ -367,7 +374,7 @@ public class Masker implements Serializable {
 					}
 				}
 			} catch (Exception e) {
-				System.out.println("Error loading file " + MaskerConstants.Masker_DIR_PROPERTIES + _maskTemplatesFile + ": "
+				System.out.println("Error loading file " + _maskTemplatesFile + ": "
 						+ e.getLocalizedMessage());
 				return false;
 			}
@@ -1554,7 +1561,7 @@ public class Masker implements Serializable {
 					lastVolleyDate = volleyDate;
 					timeOffset += volleyOffset;
 					maskedVolleyDate = new MaskerDate(_startDate.getTime() + timeOffset);
-					volleyObj.put("datetime", maskedVolleyDate.toString(MaskerDate.CREATE_DATE_FORMAT_12, "GMT"));
+					volleyObj.put("datetime", maskedVolleyDate.toStringDateTime());
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1715,10 +1722,12 @@ public class Masker implements Serializable {
 	 * @param volleyCount
 	 *                    the number of the volley within the dialog between a
 	 *                    client and a support agent
+	 * @param sessionID
+	 *                    the unique identity of the conversation
 	 * @return true if the volley contains at least one URL that references a domain
 	 *         in our list, otherwise false
 	 */
-	boolean volleyHasURLDomainRef(JSONObject volley, int volleyCount, Long sessionID) {
+	boolean volleyHasURLDomainRef(JSONObject volley, int volleyCount, String sessionID) {
 		boolean result = false;
 		int httpOffset = -1;
 		int spaceOffset = -1;
