@@ -16,17 +16,6 @@
               }
             ],
             "response":"response"
-          },
-          "login/userid":{
-            "actions":[{
-                "params":[],
-                "class":"com.whitelistmasker.services.MaskHelloService",
-                "method":"doHello",
-                "return":"response",
-                "publish":[]
-              }
-            ],
-            "response":"response"
           }
         },
         "patch":{
