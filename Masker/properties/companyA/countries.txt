@@ -1,0 +1,535 @@
+_ from various locations in IBM databases
+ad
+ae
+af
+afghanistan
+africa
+ag
+ai
+al
+albania
+algeria
+am
+america
+american samoa
+and
+andorra
+angola
+anguilla
+antarctica
+antigua barbuda
+ao
+aq
+ar
+arab
+arabia
+argentina
+armenia
+aruba
+as
+ascension tristan da cunha saint helena
+at
+au
+australia
+austria
+aw
+ax
+az
+azerbaijan
+ba
+bahamas
+bahrain
+bangladesh
+barbados
+bb
+bd
+be
+belarus
+belgium
+belize
+benin
+bermuda
+bf
+bg
+bh
+bhutan
+bi
+bj
+bl
+bm
+bn
+bo
+bolivarian republic venezuela
+bosnia herzegovina
+botswana
+bouvet island
+bq
+br
+brazil
+british indian ocean territory
+british virgin islands
+brunei darussalam
+bs
+bt
+bulgaria
+burkina faso
+burundi
+bv
+bw
+by
+bz
+ca
+cambodia
+cameroon
+canada
+cape verde
+cayman islands
+cc
+cd
+central african republic
+cf
+cg
+ch
+chad
+chile
+china
+christmas island
+ck
+cl
+cm
+cn
+co
+cocoskeeling
+colombia
+comoros
+congo
+cook islands
+costa
+costa rica
+cr
+croatia
+cu
+cuba
+curacao
+curaçao
+cv
+cw
+cx
+cy
+cyprus
+cz
+czech
+czech republic
+czechia
+côte d'ivoire  ci
+de
+democratic people's republic kp korea
+democratic republic congo
+denmark
+dj
+djibouti
+dk
+dm
+do
+dominica
+dominican republic
+dz
+ec
+ecuador
+ee
+eg
+egypt
+eh
+el salvador
+emirates
+equatorial guinea
+er
+eritrea
+es
+estonia
+et
+ethiopia
+falklislands
+faroe islands
+fed.
+federated states micronesia
+fi
+fiji
+finland
+fj
+fk
+fm
+fo
+former yugoslav republic macedonia
+fr
+france
+french guiana
+french polynesia
+french southern territories
+ga
+gabon
+gambia
+gb
+gd
+ge
+georgia
+germany
+gf
+gg
+gh
+ghana
+gi
+gibraltar
+gl
+gm
+gn
+gp
+gq
+gr
+greece
+greenland
+grenada
+gs
+gt
+gu
+guadeloupe
+guam
+guatemala
+guernsey
+guinea
+guinea bissau
+guyana
+gw
+gy
+haiti
+heard islmcdonald islands
+hk
+hm
+hn
+holy see
+honduras
+hong
+hong kong
+hr
+ht
+hu
+hungary
+iceland
+id
+ie
+il
+im
+in
+india
+indonesia
+io
+iq
+ir
+iraq
+ireland
+is
+islamic republic iran
+islands
+isle man
+israel
+it
+italy
+jamaica
+japan
+je
+jersey
+jm
+jo
+jordan
+jp
+kazakhstan
+ke
+kenya
+kg
+kh
+ki
+kingdom
+kiribati
+km
+kn
+kong
+korea
+kr
+kuwait
+kw
+ky
+kyrgyzstan
+kz
+lanka
+lao people's democratic republic la
+latvia
+lb
+lc
+lebanon
+lesotho
+leste
+li
+liberia
+libya
+liechtenstein
+lithuania
+lk
+lr
+ls
+lt
+lu
+luxembourg
+lv
+ly
+ma
+macao
+madagascar
+malawi
+malaysia
+maldives
+mali
+malta
+malvinas
+marshall islands
+martinique
+mauritania
+mauritius
+mayotte
+mc
+md
+me
+mexico
+mf
+mg
+mh
+mk
+ml
+mm
+mn
+mo
+monaco
+mongolia
+montenegro
+montserrat
+morocco
+mozambique
+mp
+mq
+mr
+ms
+mt
+mu
+mv
+mw
+mx
+my
+myanmar
+mz
+na
+namibia
+nauru
+nc
+ne
+nepal
+netherlands
+new
+new caledonia
+new zealand
+nf
+ng
+ni
+nicaragua
+niger
+nigeria
+niue
+nl
+no
+norfolk island
+northern mariana islands
+norway
+np
+nr
+nu
+nz
+of
+om
+oman
+pa
+pakistan
+palau
+panama
+papua new guinea
+paraguay
+pe
+peru
+pf
+pg
+ph
+philippines
+pitcairn
+pk
+pl
+plurinational state bolivia
+pm
+pn
+poland
+portugal
+pr
+province china taiwan
+ps
+pt
+puerto rico
+pw
+py
+qa
+qatar
+re
+republic
+republic korea
+republic moldova
+rica
+ro
+romania
+rs
+ru
+russia
+russian
+russian federation
+rw
+rwanda
+réunion
+sa
+saint barthélemy
+saint kitts nevis
+saint lucia
+saint martin
+saint pierre miquelon
+saint vincent grenadines
+samoa
+san marino
+sao tome principe
+saudi
+saudi arabia
+sb
+sc
+sd
+se
+senegal
+serbia
+seychelles
+sg
+sh
+si
+sierra leone
+singapore
+sint eustatius saba bonaire
+sint maarten
+sj
+sk
+sl
+slovakia
+slovenia
+sm
+sn
+so
+solomon islands
+somalia
+south
+south africa
+south georgia south sandwich islands
+south sudan
+spain
+sr
+sri
+sri lanka
+ss
+st
+state palestine
+states
+sudan
+suriname
+sv
+svalbard jan mayen
+swaziland
+sweden
+switzerland
+sx
+sy
+syrian arab republic
+sz
+taiwan
+tajikistan
+tc
+td
+tf
+tg
+th
+thailand
+timor
+tj
+tk
+tl
+tm
+tn
+to
+tobago
+togo
+tokelau
+tonga
+tr
+trinidad
+trinidad tobago
+tt
+tunisia
+turkey
+turkiye
+turkmenistan
+turks caicos islands
+tuvalu
+tv
+tw
+tz
+ua
+ug
+uganda
+ukraine
+um
+united
+united arab emirates
+united kingdom
+united republic tanzania
+united states
+united states minor outlying islands
+uruguay
+us
+us virgin islands
+usa
+uy
+uz
+uzbekistan
+va
+vanuatu
+vatican city state
+vc
+ve
+venezuela
+vg
+vi
+viet nam
+vietnam
+vn
+vu
+wallis futuna
+western sahara
+wf
+ws
+ye
+yemen
+yt
+za
+zambia
+zealand
+zimbabwe
+zm
+zw
+ålislands

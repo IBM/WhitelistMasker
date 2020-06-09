@@ -23,6 +23,7 @@
 package com.whitelistmasker.masker;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.Serializable;
 import java.nio.file.FileSystems;
 import java.nio.file.InvalidPathException;
@@ -53,8 +54,6 @@ import com.api.json.JSONObject;
  * MaskWebServices to enable masking content via REST request.
  */
 public class Masker implements Serializable {
-
-	private static final long serialVersionUID = -4315882565512778401L;
 
 	/**
 	 * Class to manage associations of reference counts to words being masked
@@ -106,42 +105,38 @@ public class Masker implements Serializable {
 		}
 	}
 
-	static String _domainPrefixesFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "DomainPrefixes.txt";
-	static List<String> _domainPrefixList = new ArrayList<String>();
-	static String _domainSuffixesFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "DomainSuffixes.txt";
-	static List<String> _domainSuffixList = new ArrayList<String>();
-	static JSONObject _geolocations = new JSONObject();
-	static String _geolocationsFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "geolocations.json";
+	static String _domainPrefixesFile = "DomainPrefixes.txt";
+
+	static String _domainSuffixesFile = "DomainSuffixes.txt";
+	static String _geolocationsFileName = "geolocations.json";
 	static String _initializing = "Initializing";
 	static boolean _isInitialized = false;
+	static final Map<String, List<String>> _mapDomainPrefixLists = new HashMap<String, List<String>>();
+	static final Map<String, List<String>> _mapDomainSuffixLists = new HashMap<String, List<String>>();
+	static final Map<String, JSONObject> _mapGeoLocationsObjs = new HashMap<String, JSONObject>();
+	static final Map<String, Boolean> _mapMaskNumbers = new HashMap<String, Boolean>();
+	static final Map<String, List<String>> _mapMasksList = new HashMap<String, List<String>>();
+	static final Map<String, JSONObject> _mapNameObjs = new HashMap<String, JSONObject>();
+	static final Map<String, List<Pattern>> _mapPatternsList = new HashMap<String, List<Pattern>>();
+	static final Map<String, JSONObject> _mapProfanityObjs = new HashMap<String, JSONObject>();
+	static final Map<String, List<String>> _mapQueryStringLists = new HashMap<String, List<String>>();
+	static final Map<String, JSONObject> _mapWhitelistObjs = new HashMap<String, JSONObject>();
 	static String _maskBad = "~bad~";
 	static Map<String, Integer> _maskedWords = new HashMap<String, Integer>();
 	static String _maskGeo = "~geo~";
 	static String _maskMisc = "~misc~";
 	static String _maskName = "~name~";
 	static String _maskNum = "~num~";
-	static Boolean _maskNumbers = Boolean.TRUE;
 	static String _maskPrefix = "~";
-	static List<String> _masks = new ArrayList<String>();
-	static String _maskTemplatesFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "maskTemplates.json";
+	static String _maskTemplatesFile = "maskTemplates.json";
 	static String _maskURL = "~url~";
 	static int _minDialogs = 5;
-	static JSONObject _names = new JSONObject();
-	static String _namesFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + "names.json";
-	static List<Pattern> _patterns = new ArrayList<Pattern>();
-	static JSONObject _profanities = new JSONObject();
-	static String _profanitiesFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "profanities.json";
-	static String _queryStringContainsFile = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "QueryStringContains.txt";
-	static List<String> _queryStringContainsList = new ArrayList<String>();
-	static JSONObject _whitelist = new JSONObject();
-	static String _whitelistFileName = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES
-			+ "whitelist-words.json";
+	static String _namesFileName = "names.json";
+	static String _profanitiesFileName = "profanities.json";
+	static String _queryStringContainsFile = "QueryStringContains.txt";
+	static final Set<String> _setTenantIDs = new HashSet<String>();
+	static String _tenantID = "companyA";
+	static String _whitelistFileName = "whitelist-words.json";
 	static final int INDEX_BACKSLASH = 0x4000;
 	static final int INDEX_COLON = 0x0080;
 	static final int INDEX_COMMA = 0x0400;
@@ -158,6 +153,7 @@ public class Masker implements Serializable {
 	static final int INDEX_SLASH = 0x0008;
 	static final int INDEX_TAB = 0x0004;
 	static final int INDEX_UNDERSCORE = 0x0100;
+	private static final long serialVersionUID = -4315882565512778401L;
 
 	/**
 	 * Static initializer for loading the whitelist and associated mask resources
@@ -175,7 +171,8 @@ public class Masker implements Serializable {
 	 * @return true if this has an acceptable URL reference, otherwise false if the
 	 *         message has a URL with an unacceptable URL reference
 	 */
-	static public boolean acceptableURLReference(String message) {
+	static public boolean acceptableURLReference(String message, List<String> queryStringContainsList,
+			List<String> domainPrefixList, List<String> domainSuffixList) {
 		String url = message.toLowerCase();
 		String domain = null;
 		int portIndex = -1;
@@ -185,7 +182,7 @@ public class Masker implements Serializable {
 		if (urlParts.length > 1) {
 			if (urlParts.length > 2) {
 				/**
-				 * This message has a URL referncing another URL so we'll mask it until we can
+				 * This message has a URL referencing another URL so we'll mask it until we can
 				 * better preserve the 2nd reference in the query string to test for the
 				 * queryStringContains.
 				 * 
@@ -200,7 +197,7 @@ public class Masker implements Serializable {
 			queryStringIndex = domain.indexOf("/");
 			if (queryStringIndex != -1 && queryStringIndex < domain.length() - 1) {
 				queryString = domain.substring(queryStringIndex + 1);
-				for (String qsFilter : _queryStringContainsList) {
+				for (String qsFilter : queryStringContainsList) {
 					if (queryString.contains(qsFilter)) {
 						return false;
 					}
@@ -218,13 +215,13 @@ public class Masker implements Serializable {
 			} else if (queryStringIndex != -1) {
 				domain = domain.substring(0, queryStringIndex);
 			} // else domain is correct
-			for (String suffix : _domainSuffixList) {
+			for (String suffix : domainSuffixList) {
 				if (domain.endsWith(suffix)) {
 					return false;
 				}
 			}
 			// check prefixes
-			for (String prefix : _domainPrefixList) {
+			for (String prefix : domainPrefixList) {
 				if (domain.startsWith(prefix)) {
 					return false;
 				}
@@ -237,147 +234,179 @@ public class Masker implements Serializable {
 	/**
 	 * Initialize the various input files used for masking
 	 * 
-	 * @return true if initialization suceeded
+	 * @return true if initialization succeeded
 	 */
 	static boolean init() {
 		synchronized (_initializing) {
-			try {
-				_whitelist = (JSONObject) MaskerUtils
-						.loadJSONFile(_whitelistFileName);
-				if (_whitelist == null) {
-					System.out.println("Can not find the whitelist key in the file " + MaskerConstants.Masker_DIR_PROPERTIES
-							+ _whitelistFileName);
+			// get the tenant IDs from the properties directory
+			File propsDir = new File("." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES);
+			if (propsDir.exists() == false) {
+				System.out.println("Can not find " + propsDir.getAbsolutePath());
+				System.out.println("Aborting.");
+				return false;
+			}
+			String[] tenantIDs = propsDir.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File current, String name) {
+					return new File(current, name).isDirectory();
+				}
+			});
+			for (String tenantID : tenantIDs) {
+				Boolean _maskNumbers = Boolean.TRUE;
+				JSONObject _whitelist = new JSONObject();
+				JSONObject _names = new JSONObject();
+				JSONObject _geolocations = new JSONObject();
+				JSONObject _profanities = new JSONObject();
+				List<String> _queryStringContainsList = new ArrayList<String>();
+				List<String> _domainPrefixList = new ArrayList<String>();
+				List<String> _domainSuffixList = new ArrayList<String>();
+				List<Pattern> _patternsList = new ArrayList<Pattern>();
+				List<String> _masksList = new ArrayList<String>();
+
+				String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + File.separator + tenantID
+						+ File.separator;
+				try {
+					_whitelist = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _whitelistFileName);
+					if (_whitelist == null) {
+						System.out.println("Can not find the whitelist key in the file " + filePrefix + _whitelistFileName);
+						return false;
+					}
+				} catch (Exception e) {
+					System.out
+							.println("Error loading file " + filePrefix + _whitelistFileName + ": " + e.getLocalizedMessage());
+					e.printStackTrace();
 					return false;
 				}
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _whitelistFileName + ": "
-						+ e.getLocalizedMessage());
-				e.printStackTrace();
-				return false;
-			}
-			try {
-				_names = (JSONObject) MaskerUtils.loadJSONFile(_namesFileName);
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _namesFileName + ": "
-						+ e.getLocalizedMessage());
-				e.printStackTrace();
-				return false;
-			}
-			try {
-				_geolocations = (JSONObject) MaskerUtils
-						.loadJSONFile(_geolocationsFileName);
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _geolocationsFileName
-						+ ": " + e.getLocalizedMessage());
-				e.printStackTrace();
-				return false;
-			}
-			try {
-				_profanities = (JSONObject) MaskerUtils
-						.loadJSONFile(_profanitiesFileName);
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _profanitiesFileName
-						+ ": " + e.getLocalizedMessage());
-				e.printStackTrace();
-				return false;
-			}
-			try {
-				List<String> domainPrefixList = MaskerUtils
-						.loadTextFile(_domainPrefixesFile);
-				for (String domainPrefix : domainPrefixList) {
-					if (domainPrefix.startsWith("_")) {
-						continue;
-					}
-					_domainPrefixList.add(domainPrefix.toLowerCase());
+				try {
+					_names = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _namesFileName);
+				} catch (Exception e) {
+					System.out.println("Error loading file " + filePrefix + _namesFileName + ": " + e.getLocalizedMessage());
+					e.printStackTrace();
+					return false;
 				}
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _domainPrefixesFile
-						+ ": " + e.getLocalizedMessage());
-				return false;
-			}
-			try {
-				List<String> domainSuffixList = MaskerUtils
-						.loadTextFile(_domainSuffixesFile);
-				for (String domainSuffix : domainSuffixList) {
-					if (domainSuffix.startsWith("_")) {
-						continue;
-					}
-					_domainSuffixList.add(domainSuffix.toLowerCase());
+				try {
+					_geolocations = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _geolocationsFileName);
+				} catch (Exception e) {
+					System.out.println(
+							"Error loading file " + filePrefix + _geolocationsFileName + ": " + e.getLocalizedMessage());
+					e.printStackTrace();
+					return false;
 				}
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _domainSuffixesFile
-						+ ": " + e.getLocalizedMessage());
-				return false;
-			}
-			try {
-				List<String> queryStringContainsList = MaskerUtils
-						.loadTextFile(_queryStringContainsFile);
-				for (String queryStringContains : queryStringContainsList) {
-					if (queryStringContains.startsWith("_")) {
-						continue;
-					}
-					_queryStringContainsList.add(queryStringContains.toLowerCase());
+				try {
+					_profanities = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _profanitiesFileName);
+				} catch (Exception e) {
+					System.out.println(
+							"Error loading file " + filePrefix + _profanitiesFileName + ": " + e.getLocalizedMessage());
+					e.printStackTrace();
+					return false;
 				}
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _queryStringContainsFile
-						+ ": " + e.getLocalizedMessage());
-				return false;
-			}
+				try {
+					List<String> domainPrefixList = MaskerUtils.loadTextFile(filePrefix + _domainPrefixesFile);
+					for (String domainPrefix : domainPrefixList) {
+						if (domainPrefix.startsWith("_")) {
+							continue;
+						}
+						_domainPrefixList.add(domainPrefix.toLowerCase());
+					}
+				} catch (Exception e) {
+					System.out.println(
+							"Error loading file " + filePrefix + _domainPrefixesFile + ": " + e.getLocalizedMessage());
+					return false;
+				}
+				try {
+					List<String> domainSuffixList = MaskerUtils.loadTextFile(filePrefix + _domainSuffixesFile);
+					for (String domainSuffix : domainSuffixList) {
+						if (domainSuffix.startsWith("_")) {
+							continue;
+						}
+						_domainSuffixList.add(domainSuffix.toLowerCase());
+					}
+				} catch (Exception e) {
+					System.out.println(
+							"Error loading file " + filePrefix + _domainSuffixesFile + ": " + e.getLocalizedMessage());
+					return false;
+				}
+				try {
+					List<String> queryStringContainsList = MaskerUtils.loadTextFile(filePrefix + _queryStringContainsFile);
+					for (String queryStringContains : queryStringContainsList) {
+						if (queryStringContains.startsWith("_")) {
+							continue;
+						}
+						_queryStringContainsList.add(queryStringContains.toLowerCase());
+					}
+				} catch (Exception e) {
+					System.out.println(
+							"Error loading file " + filePrefix + _queryStringContainsFile + ": " + e.getLocalizedMessage());
+					return false;
+				}
 
-			try {
-				JSONObject maskTemplates = MaskerUtils
-						.loadJSONFile(_maskTemplatesFile);
-				Object test = maskTemplates.get("maskNumbers");
-				if (test != null && test instanceof Boolean) {
-					_maskNumbers = (Boolean) test;
-				}
-				JSONArray templates = (JSONArray) maskTemplates.get("templates");
-				if (templates == null) {
-					templates = new JSONArray();
-				}
-				String addPattern = "";
-				String addMask = "";
-				JSONObject jObj;
-				for (Object obj : templates) {
-					jObj = (JSONObject) obj;
-					addPattern = (String) jObj.get("template");
-					addMask = (String) jObj.get("mask");
-					if (addPattern != null && addMask != null) {
-						addPattern = addPattern.trim();
-						// ensure masks are lowercase to work with masking check
-						addMask = addMask.toLowerCase().trim();
-						// ensure there is no wrapper
-						if (addMask.startsWith(_maskPrefix) == true) {
-							addMask = addMask.substring(1);
-						}
-						if (addMask.endsWith(_maskPrefix) == true) {
-							addMask = addMask.substring(0, addMask.length() - 1);
-						}
-						if (addMask.length() > 0) {
-							try {
-								Pattern newPattern = Pattern.compile(addPattern);
-								_patterns.add(newPattern);
-								_masks.add(addMask);
-							} catch (PatternSyntaxException pse) {
-								System.out.println("Skipping \"" + addPattern + "\" because it did not compile: "
-										+ pse.getLocalizedMessage());
+				try {
+					JSONObject maskTemplates = MaskerUtils.loadJSONFile(filePrefix + _maskTemplatesFile);
+					Object test = maskTemplates.get("maskNumbers");
+					if (test != null && test instanceof Boolean) {
+						_maskNumbers = (Boolean) test;
+					}
+					JSONArray templates = (JSONArray) maskTemplates.get("templates");
+					if (templates == null) {
+						templates = new JSONArray();
+					}
+					String addPattern = "";
+					String addMask = "";
+					JSONObject jObj;
+					for (Object obj : templates) {
+						jObj = (JSONObject) obj;
+						addPattern = (String) jObj.get("template");
+						addMask = (String) jObj.get("mask");
+						if (addPattern != null && addMask != null) {
+							addPattern = addPattern.trim();
+							// ensure masks are lowercase to work with masking check
+							addMask = addMask.toLowerCase().trim();
+							// ensure there is no wrapper
+							if (addMask.startsWith(_maskPrefix) == true) {
+								addMask = addMask.substring(1);
+							}
+							if (addMask.endsWith(_maskPrefix) == true) {
+								addMask = addMask.substring(0, addMask.length() - 1);
+							}
+							if (addMask.length() > 0) {
+								try {
+									Pattern newPattern = Pattern.compile(addPattern);
+									_patternsList.add(newPattern);
+									_masksList.add(addMask);
+								} catch (PatternSyntaxException pse) {
+									System.out.println("Skipping \"" + addPattern + "\" because it did not compile: "
+											+ pse.getLocalizedMessage());
+								}
+							} else {
+								System.out.println("Skipping \"" + addPattern + "\" because its \"mask\" was empty.");
 							}
 						} else {
-							System.out.println("Skipping \"" + addPattern + "\" because its \"mask\" was empty.");
-						}
-					} else {
-						if (addPattern == null) {
-							System.out.println("Skipping \"" + addMask + "\" because its \"template\" was missing or null.");
-						} else {
-							System.out.println("Skipping \"" + addPattern + "\" because its \"mask\" was missing or null.");
+							if (addPattern == null) {
+								System.out
+										.println("Skipping \"" + addMask + "\" because its \"template\" was missing or null.");
+							} else {
+								System.out.println("Skipping \"" + addPattern + "\" because its \"mask\" was missing or null.");
+							}
 						}
 					}
+				} catch (Exception e) {
+					System.out
+							.println("Error loading file " + filePrefix + _maskTemplatesFile + ": " + e.getLocalizedMessage());
+					return false;
 				}
-			} catch (Exception e) {
-				System.out.println("Error loading file " + _maskTemplatesFile + ": "
-						+ e.getLocalizedMessage());
-				return false;
-			}
+				_setTenantIDs.add(tenantID);
+				_mapMaskNumbers.put(tenantID, _maskNumbers);
+				_mapWhitelistObjs.put(tenantID, _whitelist);
+				_mapNameObjs.put(tenantID, _names);
+				_mapGeoLocationsObjs.put(tenantID, _geolocations);
+				_mapProfanityObjs.put(tenantID, _profanities);
+				_mapQueryStringLists.put(tenantID, _queryStringContainsList);
+				_mapDomainPrefixLists.put(tenantID, _domainPrefixList);
+				_mapDomainSuffixLists.put(tenantID, _domainSuffixList);
+				_mapPatternsList.put(tenantID, _patternsList);
+				_mapMasksList.put(tenantID, _masksList);
+
+			} // end while processing each tenantID
 			System.out.println("System initialized properly.");
 			_isInitialized = true;
 		}
@@ -426,7 +455,7 @@ public class Masker implements Serializable {
 		Masker pgm = new Masker();
 		if (pgm.getParams(args)) {
 			System.out.println("\nFiles ending with ." + pgm._ext + " will be read from " + pgm._inputPath //
-					+ "\nand content not in the whitelist will be masked."//
+					+ "\nand content not in the " + _tenantID + " whitelist will be masked."//
 					+ "\nIf the dialog contains a reference to a URL" //
 					+ "\nwith a domain not ending with a suffix in the domain suffixes list" //
 					+ "\nnor starting with a prefix in the domain prefixes list" //
@@ -436,11 +465,24 @@ public class Masker implements Serializable {
 					+ "\nthe dialog content will be saved to the output directory " + pgm._outputPath); //
 			if (MaskerUtils.prompt("Press q to quit or press Enter to continue...").length() == 0) {
 				try {
+
+					JSONObject _whitelist = _mapWhitelistObjs.get(_tenantID);
+					JSONObject _names = _mapNameObjs.get(_tenantID);
+					JSONObject _geolocations = _mapGeoLocationsObjs.get(_tenantID);
+					JSONObject _profanities = _mapProfanityObjs.get(_tenantID);
+					List<Pattern> _patterns = _mapPatternsList.get(_tenantID);
+					List<String> _masks = _mapMasksList.get(_tenantID);
+					List<String> _queryStringContainsList = _mapQueryStringLists.get(_tenantID);
+					List<String> _domainPrefixList = _mapDomainPrefixLists.get(_tenantID);
+					List<String> _domainSuffixList = _mapDomainSuffixLists.get(_tenantID);
+					Boolean _maskNumbers = _mapMaskNumbers.get(_tenantID);
+
 					List<Path> files = MaskerUtils
 							.listSourceFiles(FileSystems.getDefault().getPath(pgm._inputPath.toString()), pgm._ext);
 					Collections.sort(files);
 					for (Path file : files) {
-						pgm.doWork(file);
+						pgm.doWork(file, _whitelist, _names, _geolocations, _profanities, _queryStringContainsList,
+								_domainPrefixList, _domainSuffixList, _patterns, _masks, _maskNumbers);
 					}
 					if (pgm._totalWords != 0L) {
 						Double pct = (100.0d * pgm._totalMasked) / pgm._totalWords;
@@ -528,8 +570,88 @@ public class Masker implements Serializable {
 		JSONArray errors = new JSONArray();
 		response.put("masked", masked);
 		response.put("errors", errors);
+		String tenantID = (String) request.get("tenantID");
+		if (tenantID == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID is missing.");
+			errors.add(error);
+			return response;
+		}
+		if (_setTenantIDs.contains(tenantID) == false) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" is not a known tenantID.");
+			errors.add(error);
+			return response;
+		}
 		String line = "";
 		String maskedLine = "";
+
+		JSONObject _whitelist = _mapWhitelistObjs.get(tenantID);
+		if (_whitelist == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no whitelist.");
+			errors.add(error);
+			return response;
+		}
+		JSONObject _names = _mapNameObjs.get(tenantID);
+		if (_names == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no names.");
+			errors.add(error);
+			return response;
+		}
+		JSONObject _geolocations = _mapGeoLocationsObjs.get(tenantID);
+		if (_geolocations == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no geolocations.");
+			errors.add(error);
+			return response;
+		}
+		JSONObject _profanities = _mapProfanityObjs.get(tenantID);
+		if (_profanities == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no profanities.");
+			errors.add(error);
+			return response;
+		}
+		List<Pattern> _patterns = _mapPatternsList.get(tenantID);
+		if (_patterns == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no patterns.");
+			errors.add(error);
+			return response;
+		}
+		List<String> _masks = _mapMasksList.get(tenantID);
+		if (_masks == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no masks.");
+			errors.add(error);
+			return response;
+		}
+
+		List<String> _queryStringContainsList = _mapQueryStringLists.get(tenantID);
+		if (_queryStringContainsList == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no QueryStringContains.");
+			errors.add(error);
+			return response;
+		}
+
+		List<String> _domainPrefixList = _mapDomainPrefixLists.get(tenantID);
+		if (_domainPrefixList == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no DomainPrefixList.");
+			errors.add(error);
+			return response;
+		}
+
+		List<String> _domainSuffixList = _mapDomainSuffixLists.get(tenantID);
+		if (_domainSuffixList == null) {
+			JSONObject error = new JSONObject();
+			error.put("error", "tenantID \"" + tenantID + "\" has no DomainSuffixList.");
+			errors.add(error);
+			return response;
+		}
 
 		List<Pattern> patterns = new ArrayList<Pattern>();
 		List<String> masks = new ArrayList<String>();
@@ -620,12 +742,78 @@ public class Masker implements Serializable {
 				String[] mixedCaseWords = splitWordsOnChar(line, ' ');
 				StringBuffer sb = new StringBuffer();
 				String lastWordMasked = "";
-				lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked,
+						counts, maskNumbers, _whitelist, _names, _geolocations, _profanities, _queryStringContainsList,
+						_domainPrefixList, _domainSuffixList, _patterns, _masks);
 				maskedLine = MaskerUtils.trimSpaces(sb.toString());
 			}
 			masked.add(maskedLine);
 		}
 		return response;
+	}
+
+	/**
+	 * Perform whitelist masking of the supplied message, updating masked word
+	 * counts where applicable.
+	 * 
+	 * @param msg
+	 *                                the message to be masked
+	 * @param counts
+	 *                                the JSON object whose masked word counts will
+	 *                                be updated
+	 * @param msgCount
+	 *                                the volley index in the conversation
+	 *                                (zero-based)
+	 * @param whitelist
+	 *                                whitelist for the current tenantID
+	 * @param names
+	 *                                names for the current tenantID
+	 * @param geolocations
+	 *                                geolocations for the current tenantID
+	 * @param profanities
+	 *                                profanities for the current tenantID
+	 * @param queryStringContainsList
+	 *                                queryStringContainsList for the current
+	 *                                tenantID
+	 * @param domainPrefixList
+	 *                                domainPrefixList for the current tenantID
+	 * @param domainSuffixList
+	 *                                domainSuffixList for the current tenantID
+	 * @param patterns
+	 *                                the patterns for the current tenantID
+	 * @param masks
+	 *                                the masks for the current tenantID
+	 * @param maskNumbers
+	 *                                whether numbers should be masked
+	 * @return masked version of the message (not the counts are updated in the
+	 *         passed counts object as well)
+	 * @throws Exception
+	 */
+	static public String maskMessage(String msg, JSONObject counts, int msgCount, JSONObject whitelist, JSONObject names,
+			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
+			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
+			Boolean maskNumbers) throws Exception {
+
+		Pattern pattern = null;
+		Matcher matcher = null;
+		synchronized (_initializing) {
+			// next apply global templates
+			for (int i = 0; i < patterns.size(); i++) {
+				pattern = patterns.get(i);
+				matcher = pattern.matcher(msg);
+				if (matcher.find()) {
+					msg = matcher.replaceAll(_maskPrefix + masks.get(i) + _maskPrefix);
+				}
+			}
+		}
+
+		// need to preserve newlines so only split on space
+		String[] mixedCaseWords = splitWordsOnChar(msg, ' ');
+		StringBuffer sb = new StringBuffer();
+		String lastWordMasked = "";
+		lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked, counts, maskNumbers, whitelist, names,
+				geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList, patterns, masks);
+		return MaskerUtils.trimSpaces(sb.toString());
 	}
 
 	/**
@@ -637,23 +825,45 @@ public class Masker implements Serializable {
 	 * be masked.
 	 * 
 	 * @param mixedCaseWords
-	 *                       words to be masked
+	 *                                words to be masked
 	 * @param splitChar
-	 *                       character used to split a word into parts
+	 *                                character used to split a word into parts
 	 * @param sb
-	 *                       the string buffer to receive the masked content from
-	 *                       the input words
+	 *                                the string buffer to receive the masked
+	 *                                content from the input words
 	 * @param lastWordMasked
-	 *                       the last type of mask applied
+	 *                                the last type of mask applied
 	 * @param counts
-	 *                       the counts of standard masks that were applied
+	 *                                the counts of standard masks that were applied
+	 * @param whitelist
+	 *                                whitelist for the current tenantID
+	 * @param names
+	 *                                names for the current tenantID
+	 * @param geolocations
+	 *                                geolocations for the current tenantID
+	 * @param profanities
+	 *                                profanities for the current tenantID
+	 * @param queryStringContainsList
+	 *                                queryStringContainsList for the current
+	 *                                tenantID
+	 * @param domainPrefixList
+	 *                                domainPrefixList for the current tenantID
+	 * @param domainSuffixList
+	 *                                domainSuffixList for the current tenantID
+	 * @param patterns
+	 *                                the patterns for the current tenantID
+	 * @param masks
+	 *                                the masks for the current tenantID
 	 * @param maskNumbers
-	 *                       whether words containing all numbers should be masked
+	 *                                whether numbers should be masked
 	 * @return the last type of mask applied to the text
 	 * @throws Exception
 	 */
 	static public String processWords(String[] mixedCaseWords, Character splitChar, StringBuffer sb,
-			String lastWordMasked, JSONObject counts, boolean maskNumbers) throws Exception {
+			String lastWordMasked, JSONObject counts, boolean maskNumbers, JSONObject whitelist, JSONObject names,
+			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
+			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks)
+			throws Exception {
 		String checkWord = "";
 		String cleanedWord = "";
 		int cleanedWordOffset = -1;
@@ -698,9 +908,11 @@ public class Masker implements Serializable {
 				// buffer
 				wordParts[1] = wordParts[1].substring(0, urlIndex);
 				String[] urlPrefixWords = new String[] { wordParts[1] };
-				lastWordMasked = processWords(urlPrefixWords, splitChar, sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(urlPrefixWords, splitChar, sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				// now handle the URL part
-				if (acceptableURLReference(url)) {
+				if (acceptableURLReference(url, queryStringContainsList, domainPrefixList, domainSuffixList)) {
 					counts.put("words", ((Long) counts.get("words")) + 1L);
 					sb.append(mixedCaseCleansedWord);
 					lastWordMasked = "";
@@ -710,7 +922,7 @@ public class Masker implements Serializable {
 				}
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				// just treat as a single word URL needing to be masked
-				if (_whitelist.get(url) == null) {
+				if (whitelist.get(url) == null) {
 					updateMasked(url);
 					counts.put("maskedURL", ((Long) counts.get("maskedURL")) + 1L);
 					// word should be masked unless last word was masked
@@ -737,7 +949,7 @@ public class Masker implements Serializable {
 			}
 
 			// is this referencing an acceptable URL
-			if (acceptableURLReference(wordParts[1])) {
+			if (acceptableURLReference(wordParts[1], queryStringContainsList, domainPrefixList, domainSuffixList)) {
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				sb.append(mixedCaseCleansedWord);
 				lastWordMasked = "";
@@ -750,7 +962,7 @@ public class Masker implements Serializable {
 			if (wordParts[1].startsWith("http") || wordParts[1].startsWith("file_http")) {
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				// just treat as a single word URL needing to be masked
-				if (_whitelist.get(wordParts[1]) == null && _masks.contains(wordParts[1]) == false) {
+				if (whitelist.get(wordParts[1]) == null && masks.contains(wordParts[1]) == false) {
 					updateMasked(wordParts[1]);
 					counts.put("maskedURL", ((Long) counts.get("maskedURL")) + 1L);
 					// word should be masked unless last word was masked
@@ -783,104 +995,136 @@ public class Masker implements Serializable {
 			// slashes
 			if (processed == 0 && wordParts[1].contains("\n")) {
 				String[] mixedCaseNLWords = splitWordsOnChar(mixedCaseCleansedWord, '\n');
-				lastWordMasked = processWords(mixedCaseNLWords, '\n', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseNLWords, '\n', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_NL;
 			}
 			if (processed == 0 && wordParts[1].contains("\r")) {
 				String[] mixedCaseCRWords = splitWordsOnChar(mixedCaseCleansedWord, '\r');
-				lastWordMasked = processWords(mixedCaseCRWords, '\r', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseCRWords, '\r', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_CR;
 			}
 			if (processed == 0 && wordParts[1].contains("\t")) {
 				String[] mixedCaseTabWords = splitWordsOnChar(mixedCaseCleansedWord, '\t');
-				lastWordMasked = processWords(mixedCaseTabWords, '\t', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseTabWords, '\t', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_TAB;
 			}
 			if (processed == 0 && wordParts[1].contains("/")) {
 				String[] mixedCaseSlashWords = splitWordsOnChar(mixedCaseCleansedWord, '/');
-				lastWordMasked = processWords(mixedCaseSlashWords, '/', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseSlashWords, '/', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_SLASH;
 			}
 			if (processed == 0 && wordParts[1].contains(".")) {
 				String[] mixedCasePeriodWords = splitWordsOnChar(mixedCaseCleansedWord, '.');
-				lastWordMasked = processWords(mixedCasePeriodWords, '.', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCasePeriodWords, '.', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_PERIOD;
 			}
 			if (processed == 0 && wordParts[1].contains("-")) {
 				String[] mixedCaseHyphenWords = splitWordsOnChar(mixedCaseCleansedWord, '-');
-				lastWordMasked = processWords(mixedCaseHyphenWords, '-', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseHyphenWords, '-', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_HYPHEN;
 			}
 			if (processed == 0 && wordParts[1].contains("(")) {
 				String[] mixedCaseLParenWords = splitWordsOnChar(mixedCaseCleansedWord, '(');
-				lastWordMasked = processWords(mixedCaseLParenWords, '(', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseLParenWords, '(', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_LPAREN;
 			}
 			if (processed == 0 && wordParts[1].contains(":")) {
 				String[] mixedCaseColonWords = splitWordsOnChar(mixedCaseCleansedWord, ':');
-				lastWordMasked = processWords(mixedCaseColonWords, ':', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseColonWords, ':', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_COLON;
 			}
 			if (processed == 0 && wordParts[1].contains("_")) {
 				String[] mixedCaseUnderscoreWords = splitWordsOnChar(mixedCaseCleansedWord, '_');
-				lastWordMasked = processWords(mixedCaseUnderscoreWords, '_', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseUnderscoreWords, '_', sb, lastWordMasked, counts, maskNumbers,
+						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
+						domainSuffixList, patterns, masks);
 				processed |= INDEX_UNDERSCORE;
 			}
 			if (processed == 0 && wordParts[1].contains(">")) {
 				String[] mixedCaseGTWords = splitWordsOnChar(mixedCaseCleansedWord, '>');
-				lastWordMasked = processWords(mixedCaseGTWords, '>', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseGTWords, '>', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_GT;
 			}
 			if (processed == 0 && wordParts[1].contains(",")) {
 				String[] mixedCaseCommaWords = splitWordsOnChar(mixedCaseCleansedWord, ',');
-				lastWordMasked = processWords(mixedCaseCommaWords, ',', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseCommaWords, ',', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_COMMA;
 			}
 			if (processed == 0 && wordParts[1].contains("+")) {
 				String[] mixedCasePlusWords = splitWordsOnChar(mixedCaseCleansedWord, '+');
-				lastWordMasked = processWords(mixedCasePlusWords, '+', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCasePlusWords, '+', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_PLUS;
 			}
 			if (processed == 0 && wordParts[1].contains(";")) {
 				String[] mixedCaseSemiColonWords = splitWordsOnChar(mixedCaseCleansedWord, ';');
-				lastWordMasked = processWords(mixedCaseSemiColonWords, ';', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseSemiColonWords, ';', sb, lastWordMasked, counts, maskNumbers,
+						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
+						domainSuffixList, patterns, masks);
 				processed |= INDEX_SEMICOLON;
 			}
 			if (processed == 0 && wordParts[1].contains(")")) {
 				String[] mixedCaseRParenWords = splitWordsOnChar(mixedCaseCleansedWord, ')');
-				lastWordMasked = processWords(mixedCaseRParenWords, ')', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseRParenWords, ')', sb, lastWordMasked, counts, maskNumbers, whitelist,
+						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
+						patterns, masks);
 				processed |= INDEX_RPAREN;
 			}
 			if (processed == 0 && wordParts[1].contains("\\")) {
 				String[] mixedCaseBackslashWords = splitWordsOnChar(mixedCaseCleansedWord, '\\');
-				lastWordMasked = processWords(mixedCaseBackslashWords, '\\', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseBackslashWords, '\\', sb, lastWordMasked, counts, maskNumbers,
+						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
+						domainSuffixList, patterns, masks);
 				processed |= INDEX_BACKSLASH;
 			}
 			if (processed == 0 && wordParts[1].contains("\u2014")) {
 				String[] mixedCaseBackslashWords = splitWordsOnChar(mixedCaseCleansedWord, '\u2014');
-				lastWordMasked = processWords(mixedCaseBackslashWords, '\u2014', sb, lastWordMasked, counts, maskNumbers);
+				lastWordMasked = processWords(mixedCaseBackslashWords, '\u2014', sb, lastWordMasked, counts, maskNumbers,
+						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
+						domainSuffixList, patterns, masks);
 				processed |= INDEX_EM_DASH;
 			}
 			if (processed == 0) {
 				// process as a normal word
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				String testWord = wordParts[1];
-				if (_whitelist.get(testWord) == null && _masks.contains(testWord) == false) {
+				if (whitelist.get(testWord) == null && masks.contains(testWord) == false) {
 					updateMasked(testWord);
 					// determine the type of mask to apply
-					if (_names.get(testWord) != null) {
+					if (names.get(testWord) != null) {
 						counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
 						if (lastWordMasked.equals(_maskName) == false) {
 							sb.append(_maskName);
 						}
 						lastWordMasked = _maskName;
-					} else if (_geolocations.get(testWord) != null) {
+					} else if (geolocations.get(testWord) != null) {
 						counts.put("maskedGeo", ((Long) counts.get("maskedGeo")) + 1L);
 						if (lastWordMasked.equals(_maskGeo) == false) {
 							sb.append(_maskGeo);
 						}
 						lastWordMasked = _maskGeo;
-					} else if (_profanities.get(testWord) != null) {
+					} else if (profanities.get(testWord) != null) {
 						counts.put("maskedBad", ((Long) counts.get("maskedBad")) + 1L);
 						if (lastWordMasked.equals(_maskBad) == false) {
 							sb.append(_maskBad);
@@ -1018,18 +1262,43 @@ public class Masker implements Serializable {
 			JSONArray updated = new JSONArray();
 			JSONArray removed = new JSONArray();
 			JSONArray errors = new JSONArray();
-
 			response.put("updated", updated);
 			response.put("removed", removed);
 			response.put("errors", errors);
+
+			String tenantID = (String) request.get("tenantID");
+			if (tenantID == null) {
+				JSONObject error = new JSONObject();
+				error.put("error", "tenantID is null");
+				errors.add(error);
+				return response;
+			} else if (_setTenantIDs.contains(tenantID) == false) {
+				JSONObject error = new JSONObject();
+				error.put("error", "tenantID \"" + tenantID + "\" is a knonwn tenantID.");
+				errors.add(error);
+				return response;
+			}
+			List<Pattern> _patterns = _mapPatternsList.get(tenantID);
+			if (_patterns == null) {
+				JSONObject error = new JSONObject();
+				error.put("error", "tenantID \"" + tenantID + "\" has no patterns.");
+				errors.add(error);
+				return response;
+			}
+			List<String> _masks = _mapMasksList.get(tenantID);
+			if (_masks == null) {
+				JSONObject error = new JSONObject();
+				error.put("error", "tenantID \"" + tenantID + "\" has no masks.");
+				errors.add(error);
+				return response;
+			}
 
 			Set<String> deletePatterns = new HashSet<String>();
 			String delPattern = "";
 			String delMask = "";
 			JSONObject jObj = null;
 			for (Object obj : removals) {
-				jObj = (JSONObject) obj;
-				delPattern = (String) jObj.get("template");
+				delPattern = (String)obj;
 				if (delPattern != null) {
 					deletePatterns.add(delPattern);
 				}
@@ -1050,7 +1319,7 @@ public class Masker implements Serializable {
 			// try removals first
 			int i = 0;
 			for (Iterator<Pattern> it = _patterns.iterator(); it.hasNext();) {
-				Pattern pattern = _patterns.get(i);
+				Pattern pattern = it.next();
 				String patternStr = pattern.pattern();
 				if (deletePatterns.contains(patternStr)) {
 					it.remove();
@@ -1152,9 +1421,33 @@ public class Masker implements Serializable {
 	 * directory.
 	 * 
 	 * @param file
-	 *             path to the JSON-based dialog file to be reviewed.
+	 *                                path to the JSON-based dialog file to be
+	 *                                reviewed.
+	 * @param whitelist
+	 *                                whitelist for the current tenantID
+	 * @param names
+	 *                                names for the current tenantID
+	 * @param geolocations
+	 *                                geolocations for the current tenantID
+	 * @param profanitites
+	 *                                profanities for the current tenantID
+	 * @param queryStringContainsList
+	 *                                queryStringContainsList for the current
+	 *                                tenantID
+	 * @param domainPrefixList
+	 *                                domainPrefixList for the current tenantID
+	 * @param domainSuffixList
+	 *                                domainSuffixList for the current tenantID
+	 * @param patterns
+	 *                                the patterns for the current tenantID
+	 * @param masks
+	 *                                the masks for the current tenantID
+	 * @param maskNumbers
+	 *                                whether numbers should be masked
 	 */
-	void doWork(Path file) {
+	void doWork(Path file, JSONObject whitelist, JSONObject names, JSONObject geolocations, JSONObject profanities,
+			List<String> queryStringContainsList, List<String> domainPrefixList, List<String> domainSuffixList,
+			List<Pattern> patterns, List<String> masks, Boolean maskNumbers) {
 		JSONObject dialogsObj;
 		try {
 			System.out.println("Processing: " + file);
@@ -1176,7 +1469,8 @@ public class Masker implements Serializable {
 				e.printStackTrace();
 			}
 
-			maskDialogContent(dialogsObj, shortFileName);
+			maskDialogContent(dialogsObj, shortFileName, whitelist, names, geolocations, profanities,
+					queryStringContainsList, domainPrefixList, domainSuffixList, patterns, masks, maskNumbers);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1195,9 +1489,25 @@ public class Masker implements Serializable {
 	boolean getParams(String[] args) {
 		String inputPath = "." + File.separator + "Dialogs";
 		String outputPath = "." + File.separator + "Masked";
+		_tenantID = "companyA";
 		String tmp = "";
+		if (args.length < 1) {
+			tmp = MaskerUtils.prompt("Enter the  tenant ID or q to  exit(" + _tenantID + "):");
+			if (tmp.length() == 0) {
+				tmp = _tenantID;
+			}
+			if ("q".equalsIgnoreCase(tmp)) {
+				return false;
+			}
+		} else {
+			_tenantID = args[0];
+		}
+		_setTenantIDs.add(_tenantID);
+		String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + File.separator + _tenantID
+				+ File.separator;
+
 		try {
-			if (args == null || args.length < 1) {
+			if (args.length < 2) {
 				tmp = MaskerUtils.prompt(
 						"Enter the fully qualified path to directory containing JSON files to be reviewed, or q to exit ("
 								+ inputPath + "):");
@@ -1209,17 +1519,17 @@ public class Masker implements Serializable {
 				}
 				inputPath = tmp;
 			} else {
-				inputPath = args[0].trim();
+				inputPath = args[1].trim();
 			}
 			if (inputPath.endsWith(File.separator) == false) {
 				inputPath += File.separator;
 			}
 			_inputPath = FileSystems.getDefault().getPath(inputPath);
 		} catch (InvalidPathException ipe) {
-			System.out.println(args[0] + " is not a valid directory to form a path.");
+			System.out.println(args[1] + " is not a valid directory to form a path.");
 			return false;
 		}
-		if (args == null || args.length < 2) {
+		if (args == null || args.length < 3) {
 			tmp = MaskerUtils
 					.prompt("Enter the fully qualified path to the output directory, or q to exit (" + outputPath + "):");
 			if (tmp == null || tmp.length() == 0) {
@@ -1230,7 +1540,7 @@ public class Masker implements Serializable {
 			}
 			outputPath = tmp;
 		} else {
-			outputPath = args[1].trim();
+			outputPath = args[2].trim();
 		}
 		if (outputPath.endsWith(File.separator) == false) {
 			outputPath += File.separator;
@@ -1246,7 +1556,7 @@ public class Masker implements Serializable {
 		}
 		_outputPath = outputPath;
 
-		if (args == null || args.length < 3) {
+		if (args == null || args.length < 4) {
 			tmp = MaskerUtils.prompt("Enter the fully qualified filename of the whitelist json file, or q to exit ("
 					+ _whitelistFileName + ")");
 			if (tmp == null || tmp.length() == 0) {
@@ -1257,22 +1567,23 @@ public class Masker implements Serializable {
 			}
 			_whitelistFileName = tmp;
 		} else {
-			_whitelistFileName = args[2].trim();
+			_whitelistFileName = args[3].trim();
 		}
 		try {
-			System.out.println("Loading " + _whitelistFileName + " -- this could take a few seconds.\n");
-			_whitelist = (JSONObject) MaskerUtils.loadJSONFile(_whitelistFileName);
+			System.out.println("Loading " + filePrefix + _whitelistFileName + " -- this could take a few seconds.\n");
+			JSONObject _whitelist = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _whitelistFileName);
 			if (_whitelist == null) {
-				System.out.println("Can not find the whitelist key in the file " + _whitelistFileName);
+				System.out.println("Can not find the whitelist key in the file " + filePrefix + _whitelistFileName);
 				return false;
 			}
+			_mapWhitelistObjs.put(_tenantID, _whitelist);
 		} catch (Exception e) {
-			System.out.println("Error loading file " + _whitelistFileName + ": " + e.getLocalizedMessage());
+			System.out.println("Error loading file " + filePrefix + _whitelistFileName + ": " + e.getLocalizedMessage());
 			e.printStackTrace();
 			return false;
 		}
 
-		if (args == null || args.length < 4) {
+		if (args == null || args.length < 5) {
 			tmp = MaskerUtils.prompt(
 					"Enter the fully qualified filename of the names json file, or q to exit (" + _namesFileName + ")");
 			if (tmp == null || tmp.length() == 0) {
@@ -1283,17 +1594,18 @@ public class Masker implements Serializable {
 			}
 			_namesFileName = tmp;
 		} else {
-			_namesFileName = args[3].trim();
+			_namesFileName = args[4].trim();
 		}
 		try {
-			_names = (JSONObject) MaskerUtils.loadJSONFile(_namesFileName);
+			JSONObject _names = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _namesFileName);
+			_mapNameObjs.put(_tenantID, _names);
 		} catch (Exception e) {
-			System.out.println("Error loading file " + _namesFileName + ": " + e.getLocalizedMessage());
+			System.out.println("Error loading file " + filePrefix + _namesFileName + ": " + e.getLocalizedMessage());
 			e.printStackTrace();
 			return false;
 		}
 
-		if (args == null || args.length < 5) {
+		if (args == null || args.length < 6) {
 			tmp = MaskerUtils.prompt("Enter the fully qualified filename of the geolocations json file, or q to exit ("
 					+ _geolocationsFileName + ")");
 			if (tmp == null || tmp.length() == 0) {
@@ -1304,17 +1616,19 @@ public class Masker implements Serializable {
 			}
 			_geolocationsFileName = tmp;
 		} else {
-			_geolocationsFileName = args[4].trim();
+			_geolocationsFileName = args[5].trim();
 		}
 		try {
-			_geolocations = (JSONObject) MaskerUtils.loadJSONFile(_geolocationsFileName);
+			JSONObject _geolocations = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _geolocationsFileName);
+			_mapGeoLocationsObjs.put(_tenantID, _geolocations);
 		} catch (Exception e) {
-			System.out.println("Error loading file " + _geolocationsFileName + ": " + e.getLocalizedMessage());
+			System.out
+					.println("Error loading file " + filePrefix + _geolocationsFileName + ": " + e.getLocalizedMessage());
 			e.printStackTrace();
 			return false;
 		}
 
-		if (args == null || args.length < 6) {
+		if (args == null || args.length < 7) {
 			tmp = MaskerUtils.prompt("Enter the fully qualified filename of the profanities json file, or q to exit ("
 					+ _profanitiesFileName + ")");
 			if (tmp == null || tmp.length() == 0) {
@@ -1325,17 +1639,18 @@ public class Masker implements Serializable {
 			}
 			_profanitiesFileName = tmp;
 		} else {
-			_profanitiesFileName = args[5].trim();
+			_profanitiesFileName = args[6].trim();
 		}
 		try {
-			_profanities = (JSONObject) MaskerUtils.loadJSONFile(_profanitiesFileName);
+			JSONObject _profanities = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _profanitiesFileName);
+			_mapProfanityObjs.put(_tenantID, _profanities);
 		} catch (Exception e) {
-			System.out.println("Error loading file " + _profanitiesFileName + ": " + e.getLocalizedMessage());
+			System.out.println("Error loading file " + filePrefix + _profanitiesFileName + ": " + e.getLocalizedMessage());
 			e.printStackTrace();
 			return false;
 		}
 
-		if (args == null || args.length < 7) {
+		if (args == null || args.length < 8) {
 			tmp = MaskerUtils.prompt("Enter the fully qualified filename of the domain prefixes filters, or q to exit ("
 					+ _domainPrefixesFile + ")");
 			if (tmp == null || tmp.length() == 0) {
@@ -1346,23 +1661,25 @@ public class Masker implements Serializable {
 			}
 			_domainPrefixesFile = tmp;
 		} else {
-			_domainPrefixesFile = args[6].trim();
+			_domainPrefixesFile = args[7].trim();
 		}
 
 		try {
-			List<String> domainPrefixList = MaskerUtils.loadTextFile(_domainPrefixesFile);
+			List<String> _domainPrefixList = new ArrayList<String>();
+			List<String> domainPrefixList = MaskerUtils.loadTextFile(filePrefix + _domainPrefixesFile);
 			for (String domainPrefix : domainPrefixList) {
 				if (domainPrefix.startsWith("_")) {
 					continue;
 				}
 				_domainPrefixList.add(domainPrefix.toLowerCase());
 			}
+			_mapDomainPrefixLists.put(_tenantID, _domainPrefixList);
 		} catch (Exception e) {
-			System.out.println("Error loading file " + _domainPrefixesFile + ": " + e.getLocalizedMessage());
+			System.out.println("Error loading file " + filePrefix + _domainPrefixesFile + ": " + e.getLocalizedMessage());
 			return false;
 		}
 
-		if (args == null || args.length < 8) {
+		if (args == null || args.length < 9) {
 			tmp = MaskerUtils.prompt("Enter the fully qualified filename of the domain suffix filters, or q to exit ("
 					+ _domainSuffixesFile + ")");
 			if (tmp == null || tmp.length() == 0) {
@@ -1373,23 +1690,25 @@ public class Masker implements Serializable {
 			}
 			_domainSuffixesFile = tmp;
 		} else {
-			_domainSuffixesFile = args[7].trim();
+			_domainSuffixesFile = args[8].trim();
 		}
 
 		try {
-			List<String> domainSuffixList = MaskerUtils.loadTextFile(_domainSuffixesFile);
+			List<String> _domainSuffixList = new ArrayList<String>();
+			List<String> domainSuffixList = MaskerUtils.loadTextFile(filePrefix + _domainSuffixesFile);
 			for (String domainSuffix : domainSuffixList) {
 				if (domainSuffix.startsWith("_")) {
 					continue;
 				}
 				_domainSuffixList.add(domainSuffix.toLowerCase());
 			}
+			_mapDomainSuffixLists.put(_tenantID, _domainSuffixList);
 		} catch (Exception e) {
 			System.out.println("Error loading file " + _domainSuffixesFile + ": " + e.getLocalizedMessage());
 			return false;
 		}
 
-		if (args == null || args.length < 9) {
+		if (args == null || args.length < 10) {
 			tmp = MaskerUtils
 					.prompt("Enter the fully qualified filename of the query string contains filters, or q to exit ("
 							+ _queryStringContainsFile + ")");
@@ -1401,23 +1720,25 @@ public class Masker implements Serializable {
 			}
 			_queryStringContainsFile = tmp;
 		} else {
-			_queryStringContainsFile = args[8].trim();
+			_queryStringContainsFile = args[9].trim();
 		}
 
 		try {
-			List<String> queryStringContainsList = MaskerUtils.loadTextFile(_queryStringContainsFile);
+			List<String> _queryStringContainsList = new ArrayList<String>();
+			List<String> queryStringContainsList = MaskerUtils.loadTextFile(filePrefix + _queryStringContainsFile);
 			for (String queryStringContains : queryStringContainsList) {
 				if (queryStringContains.startsWith("_")) {
 					continue;
 				}
 				_queryStringContainsList.add(queryStringContains.toLowerCase());
 			}
+			_mapQueryStringLists.put(_tenantID, _queryStringContainsList);
 		} catch (Exception e) {
-			System.out.println("Error loading file " + _queryStringContainsFile + ": " + e.getLocalizedMessage());
+			System.out
+					.println("Error loading file " + filePrefix + _queryStringContainsFile + ": " + e.getLocalizedMessage());
 			return false;
 		}
-
-		if (args == null || args.length < 10) {
+		if (args == null || args.length < 11) {
 			tmp = MaskerUtils.prompt("Enter the minimum dialogs per day, or q to exit (" + _minDialogs + ")");
 			if (tmp == null || tmp.length() == 0) {
 				tmp = new Integer(_minDialogs).toString();
@@ -1437,7 +1758,7 @@ public class Masker implements Serializable {
 			}
 		} else {
 			try {
-				_minDialogs = new Integer(args[9]);
+				_minDialogs = new Integer(args[10]);
 				if (_minDialogs < 1) {
 					System.out.println("Minimum dialogs per day must be a positive integer.");
 					return false;
@@ -1447,7 +1768,8 @@ public class Masker implements Serializable {
 				return false;
 			}
 		}
-		if (args == null || args.length < 11) {
+		Boolean _maskNumbers = Boolean.TRUE;
+		if (args == null || args.length < 12) {
 			tmp = MaskerUtils.prompt("Numbers should be masked, or q to exit (" + _maskNumbers + ")");
 			if (tmp == null || tmp.length() == 0) {
 				tmp = _maskNumbers.toString();
@@ -1456,8 +1778,9 @@ public class Masker implements Serializable {
 				return false;
 			}
 			_maskNumbers = new Boolean(tmp);
+			_mapMaskNumbers.put(_tenantID, _maskNumbers);
 		} else {
-			_maskNumbers = new Boolean(args[10]);
+			_maskNumbers = new Boolean(args[11]);
 		}
 		_isInitialized = true;
 		return true;
@@ -1470,13 +1793,38 @@ public class Masker implements Serializable {
 	 * filter list.
 	 * 
 	 * @param dialogsObj
-	 *                   object containing a set of dialogs between clients and
-	 *                   support agents.
+	 *                                object containing a set of dialogs between
+	 *                                clients and support agents.
 	 * @param fileName
-	 *                   the name of the file from which the dialogsObj was read
+	 *                                the name of the file from which the dialogsObj
+	 *                                was read
+	 * @param whitelist
+	 *                                whitelist for the current tenantID
+	 * @param names
+	 *                                names for the current tenantID
+	 * @param geolocations
+	 *                                geolocations for the current tenantID
+	 * @param profanitites
+	 *                                profanities for the current tenantID
+	 * @param queryStringContainsList
+	 *                                queryStringContainsList for the current
+	 *                                tenantID
+	 * @param domainPrefixList
+	 *                                domainPrefixList for the current tenantID
+	 * @param domainSuffixList
+	 *                                domainSuffixList for the current tenantID
+	 * @param patterns
+	 *                                the patterns for the current tenantID
+	 * @param masks
+	 *                                the masks for the current tenantID
+	 * @param maskNumbers
+	 *                                whether numbers should be masked
 	 * @throws Exception
 	 */
-	void maskDialogContent(JSONObject dialogsObj, String fileName) throws Exception {
+	void maskDialogContent(JSONObject dialogsObj, String fileName, JSONObject whitelist, JSONObject names,
+			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
+			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
+			Boolean maskNumbers) throws Exception {
 		if (dialogsObj == null) {
 			return;
 		}
@@ -1567,7 +1915,8 @@ public class Masker implements Serializable {
 					e.printStackTrace();
 				}
 
-				maskedVolley = maskVolley(volleyObj, counts, volleyCount);
+				maskedVolley = maskVolley(volleyObj, counts, volleyCount, whitelist, names, geolocations, profanities,
+						queryStringContainsList, domainPrefixList, domainSuffixList, patterns, masks, maskNumbers);
 				maskedDialogVolleysArray.add(maskedVolley);
 				volleyCount++;
 			}
@@ -1642,56 +1991,44 @@ public class Masker implements Serializable {
 	}
 
 	/**
-	 * Perform whitelist masking of the supplied message, updating masked word
-	 * counts where applicable.
-	 * 
-	 * @param msg
-	 *                 the message to be masked
-	 * @param counts
-	 *                 the JSON object whose masked word counts will be updated
-	 * @param msgCount
-	 *                 the volley index in the conversation (zero-based)
-	 * @return masked version of the message (not the counts are updated in the
-	 *         passed counts object as well)
-	 * @throws Exception
-	 */
-	static public String maskMessage(String msg, JSONObject counts, int msgCount) throws Exception {
-
-		Pattern pattern = null;
-		Matcher matcher = null;
-		synchronized (_initializing) {
-			// next apply global templates
-			for (int i = 0; i < _patterns.size(); i++) {
-				pattern = _patterns.get(i);
-				matcher = pattern.matcher(msg);
-				if (matcher.find()) {
-					msg = matcher.replaceAll(_maskPrefix + _masks.get(i) + _maskPrefix);
-				}
-			}
-		}
-
-		// need to preserve newlines so only split on space
-		String[] mixedCaseWords = splitWordsOnChar(msg, ' ');
-		StringBuffer sb = new StringBuffer();
-		String lastWordMasked = "";
-		lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked, counts, _maskNumbers);
-		return MaskerUtils.trimSpaces(sb.toString());
-	}
-
-	/**
 	 * Mask the supplied volley including the speaker and message
 	 * 
 	 * @param volley
-	 *                    object containing the speaker (e.g., agent, bot, or
-	 *                    client(\d)?), datetime, and message
+	 *                                object containing the speaker (e.g., agent,
+	 *                                bot, or client(\d)?), datetime, and message
 	 * @param counts
-	 *                    the object storing counts of masked words
+	 *                                the object storing counts of masked words
 	 * @param volleyCount
-	 *                    which volley index in the conversation (zero-based)
+	 *                                which volley index in the conversation
+	 *                                (zero-based)
+	 * @param whitelist
+	 *                                whitelist for the current tenantID
+	 * @param names
+	 *                                names for the current tenantID
+	 * @param geolocations
+	 *                                geolocations for the current tenantID
+	 * @param profanitites
+	 *                                profanities for the current tenantID
+	 * @param queryStringContainsList
+	 *                                queryStringContainsList for the current
+	 *                                tenantID
+	 * @param domainPrefixList
+	 *                                domainPrefixList for the current tenantID
+	 * @param domainSuffixList
+	 *                                domainSuffixList for the current tenantID
+	 * @param patterns
+	 *                                the patterns for the current tenantID
+	 * @param masks
+	 *                                the masks for the current tenantID
+	 * @param maskNumbers
+	 *                                whether numbers should be masked
 	 * @return the masked version of the supplied volley
 	 * @throws Exception
 	 */
-	JSONObject maskVolley(JSONObject volley, JSONObject counts, int volleyCount) throws Exception {
+	JSONObject maskVolley(JSONObject volley, JSONObject counts, int volleyCount, JSONObject whitelist, JSONObject names,
+			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
+			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
+			Boolean maskNumbers) throws Exception {
 		JSONObject result = new JSONObject();
 		// set up volley issuer
 		if (volley.get("agent") != null) {
@@ -1707,7 +2044,8 @@ public class Masker implements Serializable {
 		String date = (String) volley.get("datetime");
 		result.put("datetime", date);
 		String msg = (String) volley.get("message");
-		msg = maskMessage(msg, counts, volleyCount);
+		msg = maskMessage(msg, counts, volleyCount, whitelist, names, geolocations, profanities, queryStringContainsList,
+				domainPrefixList, domainSuffixList, patterns, masks, maskNumbers);
 		result.put("message", msg);
 		return result;
 	}

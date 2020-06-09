@@ -22,6 +22,7 @@
 
 package com.whitelistmasker.masker;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -89,9 +90,19 @@ public class TestWSupdateMasks implements Serializable {
 	 */
 	public JSONObject testUpdateMasks() {
 		JSONObject response = new JSONObject();
-		String maskerWebServicesFile = MaskerConstants.Masker_DIR_PROPERTIES + "MaskWebService.properties";
+      String tenantID = "companyA";
+		String maskerWebServicesFile = "MaskWebService.properties";
 		while (true) {
-			String propertiesFilename = MaskerUtils
+         String tmp = MaskerUtils.prompt("Enter the tenant ID or q to exit ("+tenantID+"):");
+         if (tmp.length() == 0) {
+            tmp = tenantID;
+         }
+         if ("q".equalsIgnoreCase(tmp)) {
+            break;
+         }
+         tenantID = tmp;
+
+         String propertiesFilename = MaskerUtils
 					.prompt("Enter the fully qualified filename of the web service properties file (" + maskerWebServicesFile
 							+ ") or q  to quit:");
 			if (propertiesFilename.length() == 0) {
@@ -103,10 +114,10 @@ public class TestWSupdateMasks implements Serializable {
 			Properties propFile = new Properties();
 			FileInputStream fis = null;
 			try {
-				fis = new FileInputStream(propertiesFilename);
+				fis = new FileInputStream("." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES+tenantID+ File.separator + propertiesFilename);
 				propFile.load(fis);
 			} catch (IOException ioe) {
-				System.out.println("Can not load " + propertiesFilename + " Error: " + ioe.getLocalizedMessage());
+				System.out.println("Can not load " + "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES+tenantID+ File.separator + propertiesFilename + " Error: " + ioe.getLocalizedMessage());
 				continue;
 			} finally {
 				if (fis != null) {
@@ -138,6 +149,7 @@ public class TestWSupdateMasks implements Serializable {
 				service.put("password", propFile.getProperty("password", "password"));
 				service.put("apitimeout", propFile.getProperty("apitimeout", "100000")); // 100 seconds
 				JSONObject request = new JSONObject();
+				request.put("tenantID", tenantID);
 				request.put("updates", updates);
 				request.put("removals", removals);
 				JSONObject body = new JSONObject();

@@ -22,6 +22,7 @@
 
 package com.whitelistmasker.masker;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -138,6 +139,21 @@ public class MakeWhitelistWords implements Serializable {
 	 *             not used
 	 */
 	public static void main(String[] args) {
+		System.out.println("Make Whitelist Words");
+		String tenantID = "companyA";
+		if (args.length >= 1) {
+			tenantID = args[0];
+		} else {
+			String test = MaskerUtils.prompt("Enter tenant id or q to quit (" + tenantID + "):");
+			if (test.length() == 0) {
+				test = tenantID;
+			}
+			if ("q".equalsIgnoreCase(test)) {
+				System.out.println("Goodbye");
+				System.exit(0);
+			}
+			tenantID = test;
+		}
 		System.out.println("Generating whitelist");
 		JSONObject _potentialWhitelistWords = new JSONObject();
 		JSONObject _names = new JSONObject();
@@ -158,18 +174,20 @@ public class MakeWhitelistWords implements Serializable {
 			System.out.println("Populate white-list words from sources.");
 
 			System.out.println("Loading google-10000-english-no-swears.txt");
-			List<String> words = MaskerUtils.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "google_words.txt");
+			List<String> words = MaskerUtils
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "google_words.txt");
 			System.out.println(
 					"Added " + addWordsToJSONObject(words, _potentialWhitelistWords, "google_word", true) + "google_words.");
 
 			System.out.println("Loading umich-words.txt");
-			words = MaskerUtils.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "umich-words.txt");
+			words = MaskerUtils
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "umich-words.txt");
 			System.out.println(
 					"Added " + addWordsToJSONObject(words, _potentialWhitelistWords, "umich_word", true) + " umich_words.");
 
 			System.out.println("Loading workspace-words.json");
-			JSONObject workspaceWords = MaskerUtils
-					.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "workspace-words.json");
+			JSONObject workspaceWords = MaskerUtils.loadJSONFile(
+					MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "workspace-words.json");
 			JSONObject whitelist = (JSONObject) workspaceWords.get("whitelist");
 			List<String> whitelist_words = new ArrayList<String>(whitelist.keySet());
 			System.out
@@ -178,7 +196,7 @@ public class MakeWhitelistWords implements Serializable {
 
 			System.out.println("Loading website-words.json (from websites)");
 			JSONObject websiteWords = MaskerUtils
-					.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "website-words.json");
+					.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "website-words.json");
 			words = new ArrayList<String>(websiteWords.keySet());
 			System.out.println(
 					"Added " + addWordsToJSONObject(words, _potentialWhitelistWords, "website", true) + " website words.");
@@ -188,33 +206,37 @@ public class MakeWhitelistWords implements Serializable {
 
 			System.out.println("Now populate cities from sources.");
 			System.out.println("Loading cities.txt");
-			List<String> cities = MaskerUtils.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "cities.txt");
+			List<String> cities = MaskerUtils
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "cities.txt");
 			System.out.println("Added " + addWordPartsToJSONObject(cities, _geolocations, "city", false) + " cities.");
 
 			System.out.println("Now populate states from sources.");
 			System.out.println("Loading states.txt");
-			List<String> states = MaskerUtils.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "states.txt");
+			List<String> states = MaskerUtils
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "states.txt");
 			System.out.println("Added " + addWordPartsToJSONObject(states, _geolocations, "state", false) + " states.");
 
 			System.out.println("Now populate countries from sources.");
 			System.out.println("Loading countries.txt");
-			List<String> countries = MaskerUtils.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "countries.txt");
+			List<String> countries = MaskerUtils
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "countries.txt");
 			System.out
 					.println("Added " + addWordPartsToJSONObject(countries, _geolocations, "country", true) + " countries.");
 
 			System.out.println("Now populate names from sources.");
 			System.out.println("Loading first_names.all.txt");
 			List<String> firstnames = MaskerUtils
-					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "first_names.all.txt");
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "first_names.all.txt");
 			System.out.println("Added " + addWordsToJSONObject(firstnames, _names, "first_name", false) + " first names.");
 
 			System.out.println("Loading last_names.all.txt");
 			List<String> lastnames = MaskerUtils
-					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "last_names.all.txt");
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "last_names.all.txt");
 			System.out.println("Added " + addWordsToJSONObject(lastnames, _names, "last_name", false) + " last names.");
 
-			System.out.println("Loading dialogNames.json (from Mac and Win dialogs)");
-			JSONObject dialogNames = MaskerUtils.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "dialog_names.json");
+			System.out.println("Loading dialogNames.json");
+			JSONObject dialogNames = MaskerUtils
+					.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "dialog_names.json");
 			List<String> dialognames = new ArrayList<String>(dialogNames.keySet());
 			System.out
 					.println("Added " + addWordsToJSONObject(dialognames, _names, "dialog_name", false) + " dialog names.");
@@ -222,7 +244,7 @@ public class MakeWhitelistWords implements Serializable {
 			System.out.println("Populate profanities from sources.");
 			System.out.println("Loading profanity_words.txt");
 			List<String> profanitywords = MaskerUtils
-					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "profanity_words.txt");
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "profanity_words.txt");
 			System.out.println(
 					"Added " + addWordsToJSONObject(profanitywords, _profanities, "profanity", false) + " profanities.");
 
@@ -270,7 +292,7 @@ public class MakeWhitelistWords implements Serializable {
 
 			System.out.println("Augmenting whitelist with override-words.txt overrides.");
 			List<String> overrideWords = MaskerUtils
-					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + "override-words.txt");
+					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "override-words.txt");
 			Collections.sort(overrideWords);
 			for (String overrideWord : overrideWords) {
 				if (overrideWord.contains("_")) {
@@ -283,14 +305,18 @@ public class MakeWhitelistWords implements Serializable {
 
 			System.out.println("After adding the override words the whitelist size is " + _potentialWhitelistWords.size());
 
-			MaskerUtils.saveJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "whitelist-words.json",
+			MaskerUtils.saveJSONFile(
+					MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "whitelist-words.json",
 					_potentialWhitelistWords);
 			System.out.println("Saved whitelist-words.json");
-			MaskerUtils.saveJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "names.json", _names);
+			MaskerUtils.saveJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "names.json",
+					_names);
 			System.out.println("Saved " + _names.size() + " entries to names.json");
-			MaskerUtils.saveJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "profanities.json", _profanities);
+			MaskerUtils.saveJSONFile(
+					MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "profanities.json", _profanities);
 			System.out.println("Saved " + _profanities.size() + " entries to profanities.json");
-			MaskerUtils.saveJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + "geolocations.json", _geolocations);
+			MaskerUtils.saveJSONFile(
+					MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "geolocations.json", _geolocations);
 			System.out.println("Saved " + _geolocations.size() + " entries to geolocations.json");
 
 			System.out.println("\nPotential names allowed as override words:");
