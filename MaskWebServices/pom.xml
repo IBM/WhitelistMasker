@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.whitelistmasker</groupId>
 	<artifactId>MaskWebServices</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<packaging>war</packaging>
 	<name>MaskWebServices</name>
 	<description>WAR file for running masking services in a container.</description>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>com.ibm.whitelistmasker</groupId>
 			<artifactId>Masker</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
