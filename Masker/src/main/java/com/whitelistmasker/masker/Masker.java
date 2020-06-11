@@ -1499,6 +1499,7 @@ public class Masker implements Serializable {
 			if ("q".equalsIgnoreCase(tmp)) {
 				return false;
 			}
+			_tenantID = tmp;
 		} else {
 			_tenantID = args[0];
 		}
