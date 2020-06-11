@@ -1,9 +1,0 @@
-{
-   "templates": [
-      {
-         "mask": "~email~",
-         "template": "([a-zA-Z])+(\\w)*((\\.(\\w)+)?)+@([a-zA-Z])+(\\w)*((\\.([a-zA-Z])+(\\w)*)+)?(\\.)[a-zA-Z]{2,}"
-      }
-   ],
-   "maskNumbers":  true
-}
