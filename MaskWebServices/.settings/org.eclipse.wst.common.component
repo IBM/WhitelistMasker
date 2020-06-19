@@ -7,7 +7,7 @@
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/properties"/>
-        <dependent-module archiveName="Masker-1.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Masker/Masker">
+        <dependent-module archiveName="Masker-1.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Masker/Masker">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="API4JSON-2.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/com.api.json.api4json/com.api.json.api4json">
