@@ -880,7 +880,7 @@ public class Masker implements Serializable {
 				// checkWord may only have non-word characters
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				sb.append(word);
-				sb.append(splitChar);
+				// sb.append(splitChar);
 				lastWordMasked = "";
 				continue;
 			}
