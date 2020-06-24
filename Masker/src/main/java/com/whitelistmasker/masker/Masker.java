@@ -105,54 +105,54 @@ public class Masker implements Serializable {
 		}
 	}
 
-	static String _domainPrefixesFile = "DomainPrefixes.txt";
+	public static String _domainPrefixesFile = "DomainPrefixes.txt";
 
-	static String _domainSuffixesFile = "DomainSuffixes.txt";
-	static String _geolocationsFileName = "geolocations.json";
-	static String _initializing = "Initializing";
-	static boolean _isInitialized = false;
-	static final Map<String, List<String>> _mapDomainPrefixLists = new HashMap<String, List<String>>();
-	static final Map<String, List<String>> _mapDomainSuffixLists = new HashMap<String, List<String>>();
-	static final Map<String, JSONObject> _mapGeoLocationsObjs = new HashMap<String, JSONObject>();
-	static final Map<String, Boolean> _mapMaskNumbers = new HashMap<String, Boolean>();
-	static final Map<String, List<String>> _mapMasksList = new HashMap<String, List<String>>();
-	static final Map<String, JSONObject> _mapNameObjs = new HashMap<String, JSONObject>();
-	static final Map<String, List<Pattern>> _mapPatternsList = new HashMap<String, List<Pattern>>();
-	static final Map<String, JSONObject> _mapProfanityObjs = new HashMap<String, JSONObject>();
-	static final Map<String, List<String>> _mapQueryStringLists = new HashMap<String, List<String>>();
-	static final Map<String, JSONObject> _mapWhitelistObjs = new HashMap<String, JSONObject>();
-	static String _maskBad = "~bad~";
-	static Map<String, Integer> _maskedWords = new HashMap<String, Integer>();
-	static String _maskGeo = "~geo~";
-	static String _maskMisc = "~misc~";
-	static String _maskName = "~name~";
-	static String _maskNum = "~num~";
-	static String _maskPrefix = "~";
-	static String _maskTemplatesFile = "maskTemplates.json";
-	static String _maskURL = "~url~";
-	static int _minDialogs = 5;
-	static String _namesFileName = "names.json";
-	static String _profanitiesFileName = "profanities.json";
-	static String _queryStringContainsFile = "QueryStringContains.txt";
-	static final Set<String> _setTenantIDs = new HashSet<String>();
-	static String _tenantID = "companyA";
-	static String _whitelistFileName = "whitelist-words.json";
-	static final int INDEX_BACKSLASH = 0x4000;
-	static final int INDEX_COLON = 0x0080;
-	static final int INDEX_COMMA = 0x0400;
-	static final int INDEX_CR = 0x0002;
-	static final int INDEX_EM_DASH = 0x8000;
-	static final int INDEX_GT = 0x0200;
-	static final int INDEX_HYPHEN = 0x0020;
-	static final int INDEX_LPAREN = 0x0040;
-	static final int INDEX_NL = 0x0001;
-	static final int INDEX_PERIOD = 0x0010;
-	static final int INDEX_PLUS = 0x0800;
-	static final int INDEX_RPAREN = 0x2000;
-	static final int INDEX_SEMICOLON = 0x1000;
-	static final int INDEX_SLASH = 0x0008;
-	static final int INDEX_TAB = 0x0004;
-	static final int INDEX_UNDERSCORE = 0x0100;
+	public static String _domainSuffixesFile = "DomainSuffixes.txt";
+	public static String _geolocationsFileName = "geolocations.json";
+	public static String _initializing = "Initializing";
+	public static boolean _isInitialized = false;
+	public static final Map<String, List<String>> _mapDomainPrefixLists = new HashMap<String, List<String>>();
+	public static final Map<String, List<String>> _mapDomainSuffixLists = new HashMap<String, List<String>>();
+	public static final Map<String, JSONObject> _mapGeoLocationsObjs = new HashMap<String, JSONObject>();
+	public static final Map<String, Boolean> _mapMaskNumbers = new HashMap<String, Boolean>();
+	public static final Map<String, List<String>> _mapMasksList = new HashMap<String, List<String>>();
+	public static final Map<String, JSONObject> _mapNameObjs = new HashMap<String, JSONObject>();
+	public static final Map<String, List<Pattern>> _mapPatternsList = new HashMap<String, List<Pattern>>();
+	public static final Map<String, JSONObject> _mapProfanityObjs = new HashMap<String, JSONObject>();
+	public static final Map<String, List<String>> _mapQueryStringLists = new HashMap<String, List<String>>();
+	public static final Map<String, JSONObject> _mapWhitelistObjs = new HashMap<String, JSONObject>();
+	public static String _maskBad = "~bad~";
+	public static Map<String, Integer> _maskedWords = new HashMap<String, Integer>();
+	public static String _maskGeo = "~geo~";
+	public static String _maskMisc = "~misc~";
+	public static String _maskName = "~name~";
+	public static String _maskNum = "~num~";
+	public static String _maskPrefix = "~";
+	public static String _maskTemplatesFile = "maskTemplates.json";
+	public static String _maskURL = "~url~";
+	public static int _minDialogs = 5;
+	public static String _namesFileName = "names.json";
+	public static String _profanitiesFileName = "profanities.json";
+	public static String _queryStringContainsFile = "QueryStringContains.txt";
+	public static final Set<String> _setTenantIDs = new HashSet<String>();
+	public static String _tenantID = "companyA";
+	public static String _whitelistFileName = "whitelist-words.json";
+	public static final int INDEX_BACKSLASH = 0x4000;
+	public static final int INDEX_COLON = 0x0080;
+	public static final int INDEX_COMMA = 0x0400;
+	public static final int INDEX_CR = 0x0002;
+	public static final int INDEX_EM_DASH = 0x8000;
+	public static final int INDEX_GT = 0x0200;
+	public static final int INDEX_HYPHEN = 0x0020;
+	public static final int INDEX_LPAREN = 0x0040;
+	public static final int INDEX_NL = 0x0001;
+	public static final int INDEX_PERIOD = 0x0010;
+	public static final int INDEX_PLUS = 0x0800;
+	public static final int INDEX_RPAREN = 0x2000;
+	public static final int INDEX_SEMICOLON = 0x1000;
+	public static final int INDEX_SLASH = 0x0008;
+	public static final int INDEX_TAB = 0x0004;
+	public static final int INDEX_UNDERSCORE = 0x0100;
 	private static final long serialVersionUID = -4315882565512778401L;
 
 	/**
@@ -1215,7 +1215,7 @@ public class Masker implements Serializable {
 	 * @param masked
 	 *               masked word to be counted
 	 */
-	static void updateMasked(String masked) {
+	public static void updateMasked(String masked) {
 		if (masked != null && masked.trim().length() > 0) {
 			masked = masked.toLowerCase();
 			int index = masked.indexOf(" ");
@@ -1390,21 +1390,21 @@ public class Masker implements Serializable {
 		}
 	}
 
-	String _ext = "json";
+	public String _ext = "json";
 
-	NumberFormat _formatter = NumberFormat.getInstance(Locale.US);
+	public NumberFormat _formatter = NumberFormat.getInstance(Locale.US);
 
-	Path _inputPath = null;
+	public Path _inputPath = null;
 
-	String _outputPath = "." + File.separator + "Masked";
+	public String _outputPath = "." + File.separator + "Masked";
 
-	MaskerDate _startDate = new MaskerDate();
+	public MaskerDate _startDate = new MaskerDate();
 
-	Long _totalDialogs = 0L;
+	public Long _totalDialogs = 0L;
 
-	Long _totalMasked = 0L;
+	public Long _totalMasked = 0L;
 
-	Long _totalWords = 0L;
+	public Long _totalWords = 0L;
 
 	/**
 	 * Constructor
@@ -1429,7 +1429,7 @@ public class Masker implements Serializable {
 	 *                                names for the current tenantID
 	 * @param geolocations
 	 *                                geolocations for the current tenantID
-	 * @param profanitites
+	 * @param profanities
 	 *                                profanities for the current tenantID
 	 * @param queryStringContainsList
 	 *                                queryStringContainsList for the current
@@ -1445,7 +1445,7 @@ public class Masker implements Serializable {
 	 * @param maskNumbers
 	 *                                whether numbers should be masked
 	 */
-	void doWork(Path file, JSONObject whitelist, JSONObject names, JSONObject geolocations, JSONObject profanities,
+	public void doWork(Path file, JSONObject whitelist, JSONObject names, JSONObject geolocations, JSONObject profanities,
 			List<String> queryStringContainsList, List<String> domainPrefixList, List<String> domainSuffixList,
 			List<Pattern> patterns, List<String> masks, Boolean maskNumbers) {
 		JSONObject dialogsObj;
@@ -1486,7 +1486,7 @@ public class Masker implements Serializable {
 	 * @return true if we have all the parameters needed for execution, or false if
 	 *         the user has opted to cancel execution.
 	 */
-	boolean getParams(String[] args) {
+	public boolean getParams(String[] args) {
 		String inputPath = "." + File.separator + "Dialogs";
 		String outputPath = "." + File.separator + "Masked";
 		_tenantID = "companyA";
@@ -1805,7 +1805,7 @@ public class Masker implements Serializable {
 	 *                                names for the current tenantID
 	 * @param geolocations
 	 *                                geolocations for the current tenantID
-	 * @param profanitites
+	 * @param profanities
 	 *                                profanities for the current tenantID
 	 * @param queryStringContainsList
 	 *                                queryStringContainsList for the current
@@ -1822,7 +1822,7 @@ public class Masker implements Serializable {
 	 *                                whether numbers should be masked
 	 * @throws Exception
 	 */
-	void maskDialogContent(JSONObject dialogsObj, String fileName, JSONObject whitelist, JSONObject names,
+	protected void maskDialogContent(JSONObject dialogsObj, String fileName, JSONObject whitelist, JSONObject names,
 			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
 			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
 			Boolean maskNumbers) throws Exception {
@@ -2008,7 +2008,7 @@ public class Masker implements Serializable {
 	 *                                names for the current tenantID
 	 * @param geolocations
 	 *                                geolocations for the current tenantID
-	 * @param profanitites
+	 * @param profanities
 	 *                                profanities for the current tenantID
 	 * @param queryStringContainsList
 	 *                                queryStringContainsList for the current
@@ -2026,7 +2026,7 @@ public class Masker implements Serializable {
 	 * @return the masked version of the supplied volley
 	 * @throws Exception
 	 */
-	JSONObject maskVolley(JSONObject volley, JSONObject counts, int volleyCount, JSONObject whitelist, JSONObject names,
+	protected JSONObject maskVolley(JSONObject volley, JSONObject counts, int volleyCount, JSONObject whitelist, JSONObject names,
 			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
 			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
 			Boolean maskNumbers) throws Exception {

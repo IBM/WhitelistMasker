@@ -240,7 +240,7 @@ public class MaskerUtils implements Serializable {
 				|| (wordchar > 0x007a && wordchar <= 0x007f) || wordchar == '\u2003' || wordchar == '\u2013'
 				|| wordchar == '\u2018' || wordchar == '\u2019' || wordchar == '\u201C' || wordchar == '\u201D'
 				|| wordchar == '\u2022' || wordchar == '\u2026' || wordchar == '\u2028' || wordchar == '\u202A'
-				|| wordchar == '\u202C' || wordchar == '\u202F') {
+				|| wordchar == '\u202C' || wordchar == '\u202F' || wordchar == '\u223C') {
 			sb.append(wordchar);
 			index++;
 			if (index == len) {
@@ -261,7 +261,7 @@ public class MaskerUtils implements Serializable {
 				|| (wordchar > 0x007a && wordchar <= 0x007f) || wordchar == '\u2003' || wordchar == '\u2013'
 				|| wordchar == '\u2018' || wordchar == '\u2019' || wordchar == '\u201C' || wordchar == '\u201D'
 				|| wordchar == '\u2022' || wordchar == '\u2026' || wordchar == '\u2028' || wordchar == '\u202A'
-				|| wordchar == '\u202C' || wordchar == '\u202F') {
+				|| wordchar == '\u202C' || wordchar == '\u202F' || wordchar == '\u223C') {
 
 			sb.append(wordchar);
 			index--;
