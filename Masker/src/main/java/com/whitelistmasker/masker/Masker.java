@@ -105,8 +105,8 @@ public class Masker implements Serializable {
 		}
 	}
 
+	public static boolean _maskCommonPatterns = false;
 	public static String _domainPrefixesFile = "DomainPrefixes.txt";
-
 	public static String _domainSuffixesFile = "DomainSuffixes.txt";
 	public static String _geolocationsFileName = "geolocations.json";
 	public static String _initializing = "Initializing";
@@ -435,6 +435,57 @@ public class Masker implements Serializable {
 		return true;
 	}
 
+	static void getDifferences(String unmasked, String masked, JSONArray diffs) {
+		/**
+		 * for each mask, find its equivalent in the original string and save it as an
+		 * object
+		 */
+		int maskOffset = masked.indexOf("~");
+		int maskEnd = -1;
+		String maskSearch = "";
+		String mask = "";
+		String betweenMasks = "";
+		int nextMaskOffset = -1;
+		int betweenMasksEnd = -1;
+		String value = "";
+		while (maskOffset != -1) {
+			unmasked = unmasked.substring(maskOffset);
+			maskSearch = masked.substring(maskOffset + 1);
+			maskEnd = maskSearch.indexOf("~");
+			if (maskEnd != -1) {
+				mask = masked.substring(maskOffset, maskOffset + maskEnd + 2);
+				betweenMasks = masked.substring(maskOffset + maskEnd + 2);
+				masked = masked.substring(maskOffset + maskEnd + 2);
+				nextMaskOffset = betweenMasks.indexOf("~");
+				if (nextMaskOffset != -1) {
+					betweenMasks = betweenMasks.substring(0, nextMaskOffset);
+					betweenMasksEnd = unmasked.indexOf(betweenMasks);
+					JSONObject part = new JSONObject();
+					value = unmasked.substring(0, betweenMasksEnd).replace("\u223C", "~");
+					part.put(mask, value);
+					diffs.add(part);
+					unmasked = unmasked.substring(betweenMasksEnd);
+					maskOffset = masked.indexOf("~");
+					continue;
+				} // else no further mask so remainder is masked value
+				JSONObject part = new JSONObject();
+				if (betweenMasks.length() == 0) {
+					part.put(mask, unmasked.replace("\u223C", "~"));
+				} else {
+					betweenMasksEnd = unmasked.indexOf(betweenMasks);
+					if (betweenMasksEnd == -1) {
+						part.put(mask, unmasked.replace("\u223C", "~"));
+					} else {
+						part.put(mask, unmasked.substring(0, betweenMasksEnd).replace("\u223C", "~"));
+					}
+				}
+				diffs.add(part);
+				break;
+			} // else not a mask
+			break;
+		}
+	}
+
 	/**
 	 * Main entry point to run the filtering of JSON-based dialog files in the
 	 * specified input directory having a specified file extension to the output
@@ -742,9 +793,9 @@ public class Masker implements Serializable {
 				String[] mixedCaseWords = splitWordsOnChar(line, ' ');
 				StringBuffer sb = new StringBuffer();
 				String lastWordMasked = "";
-				lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked,
-						counts, maskNumbers, _whitelist, _names, _geolocations, _profanities, _queryStringContainsList,
-						_domainPrefixList, _domainSuffixList, _patterns, _masks);
+				lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked, counts, maskNumbers, _whitelist,
+						_names, _geolocations, _profanities, _queryStringContainsList, _domainPrefixList, _domainSuffixList,
+						_patterns, _masks);
 				maskedLine = MaskerUtils.trimSpaces(sb.toString());
 			}
 			masked.add(maskedLine);
@@ -807,6 +858,42 @@ public class Masker implements Serializable {
 			}
 		}
 
+		if (_maskCommonPatterns) {
+			/**
+			 * Do global fix ups here for patterns like: Welcome X. Your chat or Customer X
+			 * has left the chat
+			 */
+			int testIndex = -1;
+			// Welcome X. Your chat
+			if (msg.startsWith("Welcome ")) {
+				testIndex = msg.indexOf(". Your chat");
+				if (testIndex > 8) {
+					updateMasked(msg.substring(8, testIndex));
+					msg = "Welcome " + _maskName + msg.substring(testIndex);
+					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+				}
+			}
+			// Customer X has left the chat
+			if (msg.startsWith("Customer ")) {
+				testIndex = msg.indexOf(" has left the chat");
+				if (testIndex > 9) {
+					updateMasked(msg.substring(9, testIndex));
+					msg = "Customer " + _maskName + msg.substring(testIndex);
+					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+				}
+			}
+			// for AskHR, first message is always Hello XXX using client's first
+			// name(s)
+			if (msgCount == 0 && msg.startsWith("Hello ")) {
+				testIndex = msg.indexOf("\n");
+				if (testIndex > 6) {
+					updateMasked(msg.substring(6));
+					msg = "Hello " + _maskName + "\n";
+					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+				}
+			}
+		}
+
 		// need to preserve newlines so only split on space
 		String[] mixedCaseWords = splitWordsOnChar(msg, ' ');
 		StringBuffer sb = new StringBuffer();
@@ -814,6 +901,109 @@ public class Masker implements Serializable {
 		lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked, counts, maskNumbers, whitelist, names,
 				geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList, patterns, masks);
 		return MaskerUtils.trimSpaces(sb.toString());
+	}
+
+	static public JSONObject maskMessageContent(JSONObject request) throws Exception {
+		JSONObject newRequest = new JSONObject();
+		newRequest.put("tenantID", request.get("tenandID"));
+		newRequest.put("maskNumbers", request.get("maskNumbers"));
+		newRequest.put("templates", request.get("templates"));
+		JSONArray unmasked = new JSONArray();
+		JSONArray messages = (JSONArray) request.get("messages");
+		JSONObject jObj = null;
+		String unmaskedStr = "";
+		String maskedStr = "";
+		for (Object obj : messages) {
+			jObj = (JSONObject) obj;
+			unmaskedStr = (String) jObj.get("utterance");
+			unmaskedStr = unmaskedStr.replace("~", "\u223C");
+			jObj.put("utterance", unmaskedStr);
+			unmasked.add(unmaskedStr);
+		}
+		newRequest.put("unmasked", unmasked);
+		newRequest.put("tenantID", (String) request.get("tenantID"));
+		JSONObject newResponse = Masker.maskContent(newRequest);
+		JSONObject response = new JSONObject();
+		response.put("errors", newResponse.get("errors"));
+		JSONArray masked = (JSONArray) newResponse.get("masked");
+		JSONArray diffs = new JSONArray();
+		response.put("diffs", diffs);
+		if (masked.size() == messages.size()) {
+			int i = 0;
+			for (Object obj : messages) {
+				jObj = (JSONObject) obj;
+				unmaskedStr = (String) jObj.get("utterance");
+				maskedStr = (String) masked.get(i);
+				getDifferences(unmaskedStr, maskedStr, diffs);
+				jObj.put("utterance", ((String) masked.get(i)).replace("\u223C", "~"));
+				i++;
+			}
+		} else {
+			throw new Exception(
+					"Masked content size " + masked.size() + " does not equal message size " + messages.size());
+		}
+		response.put("maskedMessages", messages);
+		return response;
+	}
+
+	/**
+	 * Mask the supplied volley including the speaker and message
+	 * 
+	 * @param volley
+	 *                                object containing the speaker (e.g., agent,
+	 *                                bot, or client(\d)?), datetime, and message
+	 * @param counts
+	 *                                the object storing counts of masked words
+	 * @param volleyCount
+	 *                                which volley index in the conversation
+	 *                                (zero-based)
+	 * @param whitelist
+	 *                                whitelist for the current tenantID
+	 * @param names
+	 *                                names for the current tenantID
+	 * @param geolocations
+	 *                                geolocations for the current tenantID
+	 * @param profanitites
+	 *                                profanities for the current tenantID
+	 * @param queryStringContainsList
+	 *                                queryStringContainsList for the current
+	 *                                tenantID
+	 * @param domainPrefixList
+	 *                                domainPrefixList for the current tenantID
+	 * @param domainSuffixList
+	 *                                domainSuffixList for the current tenantID
+	 * @param patterns
+	 *                                the patterns for the current tenantID
+	 * @param masks
+	 *                                the masks for the current tenantID
+	 * @param maskNumbers
+	 *                                whether numbers should be masked
+	 * @return the masked version of the supplied volley
+	 * @throws Exception
+	 */
+	public JSONObject maskVolley(JSONObject volley, JSONObject counts, int volleyCount, JSONObject whitelist,
+			JSONObject names, JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
+			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
+			Boolean maskNumbers) throws Exception {
+		JSONObject result = new JSONObject();
+		// set up volley issuer
+		if (volley.get("agent") != null) {
+			result.put("agent", _maskName);
+			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+		} else if (volley.get("bot") != null) {
+			result.put("bot", _maskName);
+			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+		} else {
+			result.put("client", _maskName);
+			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+		}
+		String date = (String) volley.get("datetime");
+		result.put("datetime", date);
+		String msg = (String) volley.get("message");
+		msg = maskMessage(msg, counts, volleyCount, whitelist, names, geolocations, profanities, queryStringContainsList,
+				domainPrefixList, domainSuffixList, patterns, masks, maskNumbers);
+		result.put("message", msg);
+		return result;
 	}
 
 	/**
@@ -1298,7 +1488,7 @@ public class Masker implements Serializable {
 			String delMask = "";
 			JSONObject jObj = null;
 			for (Object obj : removals) {
-				delPattern = (String)obj;
+				delPattern = (String) obj;
 				if (delPattern != null) {
 					deletePatterns.add(delPattern);
 				}
@@ -1445,9 +1635,9 @@ public class Masker implements Serializable {
 	 * @param maskNumbers
 	 *                                whether numbers should be masked
 	 */
-	public void doWork(Path file, JSONObject whitelist, JSONObject names, JSONObject geolocations, JSONObject profanities,
-			List<String> queryStringContainsList, List<String> domainPrefixList, List<String> domainSuffixList,
-			List<Pattern> patterns, List<String> masks, Boolean maskNumbers) {
+	public void doWork(Path file, JSONObject whitelist, JSONObject names, JSONObject geolocations,
+			JSONObject profanities, List<String> queryStringContainsList, List<String> domainPrefixList,
+			List<String> domainSuffixList, List<Pattern> patterns, List<String> masks, Boolean maskNumbers) {
 		JSONObject dialogsObj;
 		try {
 			System.out.println("Processing: " + file);
@@ -1989,66 +2179,6 @@ public class Masker implements Serializable {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * Mask the supplied volley including the speaker and message
-	 * 
-	 * @param volley
-	 *                                object containing the speaker (e.g., agent,
-	 *                                bot, or client(\d)?), datetime, and message
-	 * @param counts
-	 *                                the object storing counts of masked words
-	 * @param volleyCount
-	 *                                which volley index in the conversation
-	 *                                (zero-based)
-	 * @param whitelist
-	 *                                whitelist for the current tenantID
-	 * @param names
-	 *                                names for the current tenantID
-	 * @param geolocations
-	 *                                geolocations for the current tenantID
-	 * @param profanities
-	 *                                profanities for the current tenantID
-	 * @param queryStringContainsList
-	 *                                queryStringContainsList for the current
-	 *                                tenantID
-	 * @param domainPrefixList
-	 *                                domainPrefixList for the current tenantID
-	 * @param domainSuffixList
-	 *                                domainSuffixList for the current tenantID
-	 * @param patterns
-	 *                                the patterns for the current tenantID
-	 * @param masks
-	 *                                the masks for the current tenantID
-	 * @param maskNumbers
-	 *                                whether numbers should be masked
-	 * @return the masked version of the supplied volley
-	 * @throws Exception
-	 */
-	protected JSONObject maskVolley(JSONObject volley, JSONObject counts, int volleyCount, JSONObject whitelist, JSONObject names,
-			JSONObject geolocations, JSONObject profanities, List<String> queryStringContainsList,
-			List<String> domainPrefixList, List<String> domainSuffixList, List<Pattern> patterns, List<String> masks,
-			Boolean maskNumbers) throws Exception {
-		JSONObject result = new JSONObject();
-		// set up volley issuer
-		if (volley.get("agent") != null) {
-			result.put("agent", _maskName);
-			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
-		} else if (volley.get("bot") != null) {
-			result.put("bot", _maskName);
-			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
-		} else {
-			result.put("client", _maskName);
-			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
-		}
-		String date = (String) volley.get("datetime");
-		result.put("datetime", date);
-		String msg = (String) volley.get("message");
-		msg = maskMessage(msg, counts, volleyCount, whitelist, names, geolocations, profanities, queryStringContainsList,
-				domainPrefixList, domainSuffixList, patterns, masks, maskNumbers);
-		result.put("message", msg);
-		return result;
 	}
 
 }

@@ -47,6 +47,19 @@
             ],
             "response":"results"
           },
+          "masker/doMessageMasking":{
+              "actions":[{
+                  "comment":"Submitted object containing an array of unmasked Strings, an optional array of templates, and an optional maskNumbers Boolean, and will return a masked array and an  error array in the response",
+                  "params":["request:com.api.json.JSONObject"
+                  ],
+                  "class":"com.whitelistmasker.masker.Masker",
+                  "method":"maskMessageContent",
+                  "return":"results",
+                  "publish":[]
+                }
+              ],
+              "response":"results"
+          },
           "masker/updateMasks":{
             "actions":[{
                 "comment":"Submitted object containing an array of updates, and an array of removals,  each  array containing objects with a template and a mask",

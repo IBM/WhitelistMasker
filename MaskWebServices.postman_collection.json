@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "040ac05c-0495-45f2-854e-0c87a3fc4e00",
+		"name": "MaskWebServices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test Masker companyA localhost 9080",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"request\": {\n      \"tenantID\":\"companyA\",\n      \"maskNumbers\": true,\n      \"templates\": [\n      ],\n      \"unmasked\": [\n         \"Bill has two emails: wnm3@us.ibm.com and lastrasl@us.ibm.com\",\n         \"this has a name: Nathaniel Mills\",\n         \"this has a number: 123\",\n         \"456 started with a number\",\n         \"Nat started with a name\",\n         \"Connecticut started with a geographic reference\",\n         \"https:\\/\\/ibm.webex.com\\/join\\/wnm3 started with a url\",\n         \"This has an unrecognizable word (hereitis) <- there\"\n      ]\n   }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9080/MaskWebServices/v1/masker/doMasking",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"MaskWebServices",
+						"v1",
+						"masker",
+						"doMasking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Message Masker companyA localhost 9080",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"request\": {\n      \"maskNumbers\": true,\n      \"messages\": [\n         {\n            \"speaker\": \"client\",\n            \"time\": \"2019-12-19T15:07:37.677-05:00\",\n            \"utterance\": \"Nat this has a ~ here ~ and two emails: wnm3@us.ibm.com and lastrasl@us.ibm.com\"\n         },\n         {\n            \"speaker\": \"bot\",\n            \"time\": \"2019-12-19T15:07:38.677-05:00\",\n            \"utterance\": \"this has a name: Nathaniel Mills\"\n         },\n         {\n            \"speaker\": \"client\",\n            \"time\": \"2019-12-19T15:07:39.677-05:00\",\n            \"utterance\": \"this has a number: 123\"\n         },\n         {\n            \"speaker\": \"agent\",\n            \"time\": \"2019-12-19T15:07:40.677-05:00\",\n            \"utterance\": \"456 started with a number\"\n         },\n         {\n            \"speaker\": \"client\",\n            \"time\": \"2019-12-19T15:07:41.677-05:00\",\n            \"utterance\": \"Bill started with a name\"\n         },\n         {\n            \"speaker\": \"agent\",\n            \"time\": \"2019-12-19T15:07:42.677-05:00\",\n            \"utterance\": \"Connecticut started with a geographic reference\"\n         },\n         {\n            \"speaker\": \"client\",\n            \"time\": \"2019-12-19T15:07:43.677-05:00\",\n            \"utterance\": \"https:\\/\\/ibm.webex.com\\/join\\/wnm3 started with a url\"\n         },\n         {\n            \"speaker\": \"agent\",\n            \"time\": \"2019-12-19T15:07:44.677-05:00\",\n            \"utterance\": \"This has an unrecognizable word (hereitis) <- there\"\n         },\n         {\n            \"speaker\": \"client\",\n            \"time\": \"2019-12-19T15:07:45.677-05:00\",\n            \"utterance\": \"Here are some US phone numbers: 8608125089, 860.812.5089, 860-8125089, 860.812-5089, +1 (860)812-5089 and another +18608125089\"\n         }\n      ],\n      \"templates\": [\n         {\n            \"mask\": \"~Phone\",\n            \"template\": \"\\\\+?1? *\\\\(?\\\\d{3}\\\\)? *[\\\\-\\\\.]?(\\\\d{3}) *[\\\\-\\\\.]? *\\\\d{4}\"\n         }\n      ],\n      \"tenantID\": \"companyA\"\n   }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9080/MaskWebServices/v1/masker/doMessageMasking",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"MaskWebServices",
+						"v1",
+						"masker",
+						"doMessageMasking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Masker companyB localhost 9080",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"request\": {\n      \"tenantID\":\"companyB\",\n      \"maskNumbers\": true,\n      \"templates\": [\n      ],\n      \"unmasked\": [\n         \"Bill has two emails: wnm3@us.ibm.com and lastrasl@us.ibm.com\",\n         \"this has a name: Nathaniel Mills\",\n         \"this has a number: 123\",\n         \"456 started with a number\",\n         \"Nat started with a name\",\n         \"Connecticut started with a geographic reference\",\n         \"https:\\/\\/ibm.webex.com\\/join\\/wnm3 started with a url\",\n         \"This has an unrecognizable word (hereitis) <- there\"\n      ]\n   }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9080/MaskWebServices/v1/masker/doMasking",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"MaskWebServices",
+						"v1",
+						"masker",
+						"doMasking"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
