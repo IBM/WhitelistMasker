@@ -38,7 +38,7 @@ To remove the image:
   4.  docker image rm -f <maskwebservices image id>
    
 ### Access Docker Container from Docker Hub ###
-The public image is found at https://hub.docker.com/repository/docker/wnmills3/maskerwebservices and is identified as wnmills3/maskerwebservices:1.0.4
+The public image is found at https://hub.docker.com/r/wnmills3/maskerwebservices and is identified as wnmills3/maskerwebservices:1.0.4
 
 ### Testing ###
 In a browser, you can access the server's URL like:
