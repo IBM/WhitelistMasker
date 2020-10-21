@@ -1124,6 +1124,12 @@ public class Masker implements Serializable {
 						sb.append(_maskURL);
 						lastWordMasked = _maskURL;
 					} else {
+                  /**
+                   * Back out last splitchar since we are reusing the same mask for a 
+                   * pattern like namesplitcharname to result in "~name~" and not
+                   * "~name~ " (assuming space is the splitchar) 
+                   */
+                  sb.setLength(Math.max(sb.length() - 1, 0));
 						sb.append(wordParts[2]);
 						if (wordParts[2].length() > 0) {
 							lastWordMasked = "";
@@ -1164,6 +1170,12 @@ public class Masker implements Serializable {
 						sb.append(_maskURL);
 						lastWordMasked = _maskURL;
 					} else {
+					   /**
+					    * Back out last splitchar since we are reusing the same mask for a 
+					    * pattern like namesplitcharname to result in "~name~" and not
+					    * "~name~ " (assuming space is the splitchar) 
+					    */
+					   sb.setLength(Math.max(sb.length() - 1, 0));
 						sb.append(wordParts[2]);
 						if (wordParts[2].length() > 0) {
 							lastWordMasked = "";
@@ -1306,19 +1318,40 @@ public class Masker implements Serializable {
 						counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
 						if (lastWordMasked.equals(_maskName) == false) {
 							sb.append(_maskName);
+						} else {
+	                  /**
+	                   * Back out last splitchar since we are reusing the same mask for a 
+	                   * pattern like namesplitcharname to result in "~name~" and not
+	                   * "~name~ " (assuming space is the splitchar) 
+	                   */
+	                  sb.setLength(Math.max(sb.length() - 1, 0));
 						}
 						lastWordMasked = _maskName;
 					} else if (geolocations.get(testWord) != null) {
 						counts.put("maskedGeo", ((Long) counts.get("maskedGeo")) + 1L);
 						if (lastWordMasked.equals(_maskGeo) == false) {
 							sb.append(_maskGeo);
-						}
+						} else {
+                     /**
+                      * Back out last splitchar since we are reusing the same mask for a 
+                      * pattern like namesplitcharname to result in "~name~" and not
+                      * "~name~ " (assuming space is the splitchar) 
+                      */
+                     sb.setLength(Math.max(sb.length() - 1, 0));
+                  }
 						lastWordMasked = _maskGeo;
 					} else if (profanities.get(testWord) != null) {
 						counts.put("maskedBad", ((Long) counts.get("maskedBad")) + 1L);
 						if (lastWordMasked.equals(_maskBad) == false) {
 							sb.append(_maskBad);
-						}
+						} else {
+                     /**
+                      * Back out last splitchar since we are reusing the same mask for a 
+                      * pattern like namesplitcharname to result in "~name~" and not
+                      * "~name~ " (assuming space is the splitchar) 
+                      */
+                     sb.setLength(Math.max(sb.length() - 1, 0));
+                  }
 						lastWordMasked = _maskBad;
 					} else {
 						// is this all numbers?
@@ -1327,7 +1360,14 @@ public class Masker implements Serializable {
 								counts.put("maskedNum", ((Long) counts.get("maskedNum")) + 1L);
 								if (lastWordMasked.equals(_maskNum) == false) {
 									sb.append(_maskNum);
-								}
+								} else {
+		                     /**
+		                      * Back out last splitchar since we are reusing the same mask for a 
+		                      * pattern like namesplitcharname to result in "~name~" and not
+		                      * "~name~ " (assuming space is the splitchar) 
+		                      */
+		                     sb.setLength(Math.max(sb.length() - 1, 0));
+		                  }
 								lastWordMasked = _maskNum;
 							} else {
 								// allow this word
@@ -1338,7 +1378,14 @@ public class Masker implements Serializable {
 							counts.put("maskedMisc", ((Long) counts.get("maskedMisc")) + 1L);
 							if (lastWordMasked.equals(_maskMisc) == false) {
 								sb.append(_maskMisc);
-							}
+							} else {
+	                     /**
+	                      * Back out last splitchar since we are reusing the same mask for a 
+	                      * pattern like namesplitcharname to result in "~name~" and not
+	                      * "~name~ " (assuming space is the splitchar) 
+	                      */
+	                     sb.setLength(Math.max(sb.length() - 1, 0));
+	                  }
 							lastWordMasked = _maskMisc;
 						}
 					}

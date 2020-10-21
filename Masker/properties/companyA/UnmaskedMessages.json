@@ -1,0 +1,14 @@
+{
+   "messages":[
+      { "speaker": "client", "utterance": "Hi, I'm Nat Mills and I wanted to get a new iPhone for my daughter Lauren"},
+      { "speaker": "client", "utterance": "this has a \u007E here ~ and two emails: wnm3@us.ibm.com and lastrasl@us.ibm.com", "time":"2019-12-19T15:07:37.677-05:00" },
+      { "speaker": "bot", "utterance": "this has a name: Nathaniel Mills", "time":"2019-12-19T15:07:38.677-05:00"},
+      { "speaker": "client", "utterance": "this has a number: 123", "time":"2019-12-19T15:07:39.677-05:00"},
+      { "speaker": "agent", "utterance": "456 started with a number", "time":"2019-12-19T15:07:40.677-05:00"},
+      { "speaker": "client", "utterance": "Bill started with a name", "time":"2019-12-19T15:07:41.677-05:00"},
+      { "speaker": "agent", "utterance": "Connecticut started with a geographic reference", "time":"2019-12-19T15:07:42.677-05:00"},
+      { "speaker": "client", "utterance": "https://ibm.webex.com/join/wnm3 started with a url", "time":"2019-12-19T15:07:43.677-05:00"},
+      { "speaker": "agent", "utterance": "This has an unrecognizable word (hereitis) <- there", "time":"2019-12-19T15:07:44.677-05:00"},
+      { "speaker": "client", "utterance": "Here are some US phone numbers: 8608125089, 860.812.5089, 860-8125089, 860.812-5089, +1 (860)812-5089 and another +18608125089", "time":"2019-12-19T15:07:45.677-05:00"}
+   ]
+}

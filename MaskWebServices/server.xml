@@ -12,7 +12,7 @@
   
 	<!-- USER REGISTRIES (using passw0rd) -->
 	<basicRegistry id="basic" realm="BasicRealm">
-      <user name="mask" password="{xor}Lz4sLCgwLTs="/>
+    <user name="mask" password="{xor}Lz4sLCgwLTs="/>
 		<user name="nonadmin" password="{xor}Lz4sLCgwLTs="/>
 		<user name="admin" password="{xor}Lz4sLCgwLTs="/>
 	</basicRegistry>

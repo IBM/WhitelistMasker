@@ -90,7 +90,7 @@ public class TestWSdoMessageMasking implements Serializable {
     */
    public JSONObject getMaskedContent() {
       JSONObject response = new JSONObject();
-      String tenantID = "helpatibm";
+      String tenantID = "companyA";
       String servicename = "localhost";
       String unmaskedFile = "UnmaskedMessages.json";
       String maskerWebServicesFile = "MaskWebService.properties";
