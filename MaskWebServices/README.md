@@ -1,8 +1,8 @@
-# MaskWebService v1.0.6 #
+# MaskWebService v1.0.7 #
 This is an Eclipse Maven Java war project.
 
 ### Build ###
-Build the war using "mvn clean install". The resulting MaskWebServices-1.0.6.war  will be in the target directory.
+Build the war using "mvn clean install". The resulting MaskWebServices-1.0.7.war  will be in the target directory.
 
 ### Install in Liberty Server ###
 Copy the two .sh files into the Liberty server's directory and make them executable using the command:
@@ -40,7 +40,7 @@ To remove the image:
   4.  docker image rm -f <maskwebservices image id>
    
 ### Access Docker Container from Docker Hub ###
-The public image is found at https://hub.docker.com/r/wnmills3/maskerwebservices and is identified as wnmills3/maskerwebservices:1.0.6
+The public image is found at https://hub.docker.com/r/wnmills3/maskerwebservices and is identified as wnmills3/maskerwebservices:1.0.7
 
 ### Testing ###
 In a browser, you can access the server's URL like:
