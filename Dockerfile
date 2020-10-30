@@ -20,7 +20,6 @@ COPY --chown=1001:0 MaskWebServices/server.xml /config/
 COPY --chown=1001:0 MaskWebServices/target/*.war /config/dropins/
 COPY --chown=1001:0 MaskWebServices/properties/  /opt/ol/wlp/output/defaultServer/properties/
 COPY --chown=1001:0 MaskWebServices/server.env /config/
-COPY --chown=1001:0 MaskWebServices/logs/ /logs/
 COPY --chown=1001:0 Masker/properties/  /opt/ol/wlp/output/defaultServer/properties/
 
 ENV AIDEN_HOME=/opt/ol/wlp/output/defaultServer
