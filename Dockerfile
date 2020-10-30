@@ -1,6 +1,6 @@
-FROM openliberty/open-liberty:kernel-java8-openj9-ubi
+FROM openliberty/open-liberty:full-java11-openj9-ubi
 
-ARG VERSION=1.0.6
+ARG VERSION=1.0.7
 ARG REVISION=RELEASE
 
 LABEL \
@@ -19,8 +19,12 @@ LABEL \
 COPY --chown=1001:0 MaskWebServices/server.xml /config/
 COPY --chown=1001:0 MaskWebServices/target/*.war /config/dropins/
 COPY --chown=1001:0 MaskWebServices/properties/  /opt/ol/wlp/output/defaultServer/properties/
+COPY --chown=1001:0 MaskWebServices/server.env /config/
+COPY --chown=1001:0 MaskWebServices/logs/ /logs/
 COPY --chown=1001:0 Masker/properties/  /opt/ol/wlp/output/defaultServer/properties/
 
 ENV AIDEN_HOME=/opt/ol/wlp/output/defaultServer
+ENV ENV SEC_TLS_TRUSTDEFAULTCERTS=true
+ENV ENV SEC_IMPORT_K8S_CERTS=true
 
 RUN configure.sh
