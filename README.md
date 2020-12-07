@@ -28,7 +28,7 @@ There are also two classes to test  the MaskWebServices able to be run  from the
 * **TestWSudpateMasks:** sends a request to the MaskWebServices to alter the regular expression mask templates
 
 ## MaskWebServices Project
-The MaskWebService provides content  to generate a war file able  to be deployed to a Liberty Server by copying the target/MaskWebServices-1.0.0.war file to the Liberty server's dropins  directory. One would  also need to copy the contents of the properties directories of both the Masker and MaskWebService projects into a properties directory  in the Liberty server  directory.
+The MaskWebService provides content  to generate a war file able  to be deployed to a Liberty Server by copying the target/MaskWebServices-1.0.8.war file to the Liberty server's dropins  directory. One would  also need to copy the contents of the properties directories of both the Masker and MaskWebService projects into a properties directory  in the Liberty server  directory.
 
 ## License
 The  code  in this repository is licensed under the  Apache 2.0 License
