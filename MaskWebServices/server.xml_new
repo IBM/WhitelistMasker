@@ -6,6 +6,7 @@
 		<feature>webProfile-8.0</feature>
 		<feature>restConnector-2.0</feature>
 		<feature>jaxrs-2.1</feature>
+		<feature>transportSecurity-1.0</feature>
 	</featureManager>
 
 	<cors allowCredentials="true" allowedHeaders="accept"
@@ -18,7 +19,6 @@
 		<user name="mask" password="{xor}Lz4sLCgwLTs=" />
 		<user name="nonadmin" password="{xor}Lz4sLCgwLTs=" />
 		<user name="admin" password="{xor}Lz4sLCgwLTs=" />
-		<user name="waauxsvcs" password="{xor}CB8rLG8xfg==" />
 	</basicRegistry>
 
 	<!-- To access this server from a remote client add a host attribute to 
@@ -29,10 +29,16 @@
 	<!-- Automatically expand WAR files and EAR files -->
 	<applicationManager autoExpand="true" />
 
-	<!-- keyStorePwd -->
-	<keyStore id="defaultKeyStore"
-		location="${server.output.dir}/keystore.p12"
-		password="{xor}NDomDCswLToPKDs=" />
+	<!-- default SSL configuration is defaultSSLSettings -->
+	<sslDefault sslRef="defaultSSLSettings" />
+	<ssl id="defaultSSLSettings" keyStoreRef="defaultKeyStore"
+		sslProtocol="TLSv1.3" trustStoreRef="defaultTrustStore"
+		clientAuthentication="false" />
+
+	<keyStore id="defaultKeyStore" location="key.jks" type="JKS"
+		password="defaultPWD" />
+	<keyStore id="defaultTrustStore" location="key.jks" type="JKS"
+		password="defaultPWD" />
 
 	<remoteFileAccess>
 		<writeDir>${server.config.dir}</writeDir>

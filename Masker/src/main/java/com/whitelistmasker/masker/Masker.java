@@ -963,7 +963,7 @@ public class Masker implements Serializable {
 	 *                                names for the current tenantID
 	 * @param geolocations
 	 *                                geolocations for the current tenantID
-	 * @param profanitites
+	 * @param profanities
 	 *                                profanities for the current tenantID
 	 * @param queryStringContainsList
 	 *                                queryStringContainsList for the current
@@ -1003,6 +1003,14 @@ public class Masker implements Serializable {
 		msg = maskMessage(msg, counts, volleyCount, whitelist, names, geolocations, profanities, queryStringContainsList,
 				domainPrefixList, domainSuffixList, patterns, masks, maskNumbers);
 		result.put("message", msg);
+		Long turn = (Long) volley.get("turn");
+		if (turn != null) {
+		   result.put("turn", turn);
+		}
+		String skill = (String) volley.get("skill");
+		if (skill != null) {
+		   result.put("skill", skill);
+		}
 		return result;
 	}
 
@@ -1741,7 +1749,7 @@ public class Masker implements Serializable {
 			_tenantID = args[0];
 		}
 		_setTenantIDs.add(_tenantID);
-		String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + File.separator + _tenantID
+		String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + _tenantID
 				+ File.separator;
 
 		try {

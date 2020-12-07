@@ -1,4 +1,4 @@
-# Masker Project v1.0.6 #
+# Masker Project v1.0.8 #
 This is  an Eclipse Maven Java project.
 
 ### JDK Version ###
