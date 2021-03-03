@@ -8,9 +8,9 @@ then
 fi
 if [ ! -d "/store/WAAData/maskersvcs/properties" ] 
 then
-   docker run  --detach --name maskersvcs -p 9080:9080 -p 9443:9443 maskerwebservices
+   docker run  --detach --name maskersvcs -p 9080:9080 maskerwebservices
 else
-   docker run -v /store/WAALogs:logs -v /store/WAAData/maskersvcs/properties:/opt/ol/wlp/output/defaultServer/properties --detach --name maskersvcs -p 9080:9080 -p 9443:9443 maskerwebservices
+   docker run -v /store/WAALogs:logs -v /store/WAAData/maskersvcs/properties:/opt/ol/wlp/output/defaultServer/properties --detach --name maskersvcs -p 9080:9080 maskerwebservices
 fi
 sleep 10
 docker logs maskersvcs

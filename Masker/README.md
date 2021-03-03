@@ -1,4 +1,4 @@
-# Masker Project v1.0.8 #
+# Masker Project v1.0.9 #
 This is  an Eclipse Maven Java project.
 
 ### JDK Version ###
@@ -17,7 +17,7 @@ If you have also built the MaskerWebServices project and installed the .war file
 
 Right click on TestWSdoMessageMasking and select Run As... / Java Application
 
-This showcases the newest feature to maske a conversation, and return the masked values in a diffs map. The reason for this is to allow applications wanting to mask PII before sending the content to other models in the Cloud by running the masker on their intranet. The diffs map allows the calling code to maintain the original content in memory so it can replace masked content later. 
+This showcases the newest feature to mask a conversation, and return the masked values in a diffs map. The reason for this is to allow applications wanting to mask PII before sending the content to other models in the Cloud by running the masker on their intranet. The diffs map allows the calling code to maintain the original content in memory so it can replace masked content later. 
 
 **Below is an example of the console running TestWSdoMessageMasking:**
 ```
