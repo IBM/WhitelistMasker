@@ -1,6 +1,6 @@
 FROM openliberty/open-liberty:full-java11-openj9-ubi
 
-ARG VERSION=1.0.8
+ARG VERSION=1.0.9
 ARG REVISION=RELEASE
 
 LABEL \
@@ -21,6 +21,9 @@ COPY --chown=1001:0 MaskWebServices/target/*.war /config/dropins/
 COPY --chown=1001:0 MaskWebServices/properties/  /opt/ol/wlp/output/defaultServer/properties/
 # COPY --chown=1001:0 MaskWebServices/server.env /config/
 COPY --chown=1001:0 Masker/properties/  /opt/ol/wlp/output/defaultServer/properties/
+
+# copy the .jar containing the utility into the appropriate place (relative to properties directory)
+COPY --chown=1001:0 Masker/target/Masker-1.0.9-jar-with-dependencies.jar /opt/ol/wlp/output/defaultServer/Masker-1.0.9-jar-with-dependencies.jar
 
 ENV AIDEN_HOME=/opt/ol/wlp/output/defaultServer
 # ENV ENV SEC_TLS_TRUSTDEFAULTCERTS=true
