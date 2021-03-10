@@ -1489,7 +1489,7 @@ public class Masker implements Serializable {
 				}
 			}
 			sb.append(wordParts[2]);
-			if (wordParts[2].trim().length() > 0) {
+			if ((wordParts[2].endsWith("\n")) || (wordParts[2].trim().length() > 0)) {
 				lastWordMasked = "";
 			}
 		}
