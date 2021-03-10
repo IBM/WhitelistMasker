@@ -533,6 +533,7 @@ public class Masker implements Serializable {
 					+ "\nthe URL will not be masked. If the masked dialog file" //
 					+ "\nhas at least the minimum number of dialogs per day," //
 					+ "\nthe dialog content will be saved to the output directory " + pgm._outputPath); //
+			System.out.println("It is "+_mapMaskNumbers.get(_tenantID)+" that numbers will be masked.");
 			if (MaskerUtils.prompt("Press q to quit or press Enter to continue	").length() == 0) {
 				try {
 
@@ -1010,8 +1011,6 @@ public class Masker implements Serializable {
 				jObj = (JSONObject) obj;
 				unmaskedStr = (String) jObj.get("utterance");
 				maskedStr = (String) masked.get(i);
-				System.out.println("unmaskedStr:\n\""+unmaskedStr+"\"");
-				System.out.println("maskedStr:\n\""+maskedStr+"\"");
 				getDifferences(unmaskedStr, maskedStr, diffs);
 				jObj.put("utterance", ((String) masked.get(i)).replace("\u223C", "~"));
 				i++;

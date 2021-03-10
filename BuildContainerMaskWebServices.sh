@@ -7,7 +7,7 @@ read
 echo "Press enter to build MaskWebServices"
 read
 cp MaskWebServices/Dockerfile_MaskWebServices Dockerfile
-docker build --tag tmp:1.1 .
+docker build --tag tmp:1.1.1 .
 docker run --publish 9080:9080 --detach --name masker tmp:1.1 >masker.container
 docker logs "$(cat masker.container)"
 docker container ls |grep masker
