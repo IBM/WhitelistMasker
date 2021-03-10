@@ -1,0 +1,157 @@
+{
+   "emoji_overrides": [
+      {
+         "csar5happy": "5\ud83d\ude03"
+      },
+      {
+         "csar2thumbsup": "2\ud83d\udc4d"
+      },
+      {
+         "csar1unamused": "1\ud83d\ude12"
+      },
+      {
+         "redheart": "\u2764\ufe0f"
+      },
+      {
+         "thumbsup": "\ud83d\udc4d"
+      },
+      {
+         "happyface": "\ud83d\ude0a"
+      },
+      {
+         "unamused": "\ud83d\ude12"
+      },
+      {
+         "prayinghands": "\ud83d\ude4f"
+      },
+      {
+         "rolf": "\ud83e\udd23"
+      },
+      {
+         "blackheart": "\u2665"
+      },
+      {
+         "disappointedface": "\ud83d\ude1e"
+      },
+      {
+         "winkingface": "\ud83d\ude09"
+      },
+      {
+         "wearyface": "\ud83d\ude29"
+      },
+      {
+         "neutralface": "\ud83d\ude10"
+      },
+      {
+         "cryingloudlyface": "\ud83d\ude2d"
+      },
+      {
+         "cryingface": "\ud83d\ude22"
+      },
+      {
+         "deliciousfoodface": "\ud83d\ude0b"
+      },
+      {
+         "grinningface": "\ud83d\ude01"
+      },
+      {
+         "womanshrugging": "\ud83e\udd37\u200d\u2640\ufe0f"
+      },
+      {
+         "snortingface": "\ud83d\ude24"
+      },
+      {
+         "swearingface": "\ud83e\udd2c"
+      },
+      {
+         "slightlysmilingface": "\ud83d\ude42"
+      },
+      {
+         "emojimodifier": "\ud83c\udffc"
+      },
+      {
+         "partyhatface": "\ud83e\udd73"
+      },
+      {
+         "palmface": "\ud83e\udd26"
+      },
+      {
+         "slightlyfrowningface": "\ud83d\ude41"
+      },
+      {
+         "concernsmiley": "concern\ud83d\ude03"
+      },
+      {
+         "okayhand": "\ud83d\udc4c"
+      },
+      {
+         "poutingface": "\ud83d\ude21"
+      },
+      {
+         "greencheckmark": "\u2705"
+      },
+      {
+         "thinkingface": 	"\ud83e\udd14"
+      },
+      {
+         "wavinghand": "\ud83d\udc4b"
+      },
+      {
+         "checkmark": "\ue29c\u94ef\ub88f"
+      },
+      {
+         "sparklingheart": "\ud83d\udc96"
+      },
+      {
+         "relievedface": "\ud83d\ude0c"
+      },
+      {
+         "grimmacingface": "\ud83d\ude2c"
+      },
+      {
+         "flushingface": "\ud83d\ude33"
+      },
+      {
+         "confusedface": "\ud83d\ude15"
+      },
+      {
+         "fingerscrossed": "\ud83e\udd1e"
+      },
+      {
+         "huggingface": "\ud83e\udd17"
+      },
+      {
+         "fireworks": "\ud83c\udf86"
+      },
+      {
+         "phonereceiver": "\ud83d\udcde"
+      },
+      {
+         "thumbsdown": "\ud83d\udc4e"
+      },
+      {
+         "pushpin": "\ud83d\udccd"
+      },
+      {
+         "clappinghands": "\ud83d\udc4f"
+      },
+      {
+         "upsidedownface": "\ud83d\ude43"
+      },
+      {
+         "skepticalface": "\ud83e\udd28"
+      },
+      {
+         "angryface": "\ud83d\ude20"
+      },
+      {
+         "pleadingeyesface": "\ud83e\udd7a"
+      },
+      {
+         "tiredface": "\ud83d\ude2b"
+      },
+      {
+         "pileofpoo": "\ud83d\udca9"
+      }
+   ]
+}

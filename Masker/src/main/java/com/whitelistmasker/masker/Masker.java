@@ -137,22 +137,23 @@ public class Masker implements Serializable {
 	public static final Set<String> _setTenantIDs = new HashSet<String>();
 	public static String _tenantID = "companyA";
 	public static String _whitelistFileName = "whitelist-words.json";
-	public static final int INDEX_BACKSLASH = 0x4000;
-	public static final int INDEX_COLON = 0x0080;
-	public static final int INDEX_COMMA = 0x0400;
-	public static final int INDEX_CR = 0x0002;
-	public static final int INDEX_EM_DASH = 0x8000;
-	public static final int INDEX_GT = 0x0200;
-	public static final int INDEX_HYPHEN = 0x0020;
-	public static final int INDEX_LPAREN = 0x0040;
-	public static final int INDEX_NL = 0x0001;
-	public static final int INDEX_PERIOD = 0x0010;
-	public static final int INDEX_PLUS = 0x0800;
-	public static final int INDEX_RPAREN = 0x2000;
-	public static final int INDEX_SEMICOLON = 0x1000;
-	public static final int INDEX_SLASH = 0x0008;
-	public static final int INDEX_TAB = 0x0004;
-	public static final int INDEX_UNDERSCORE = 0x0100;
+	public static final long INDEX_BACKSLASH = 0x00000001L;
+	public static final long INDEX_COLON = 0x00000002L;
+	public static final long INDEX_COMMA = 0x00000004L;
+	public static final long INDEX_CR = 0x00000008L;
+	public static final long INDEX_EM_DASH = 0x00000010L;
+	public static final long INDEX_GT = 0x00000020L;
+	public static final long INDEX_HYPHEN = 0x00000040L;
+	public static final long INDEX_LPAREN = 0x00000080L;
+	public static final long INDEX_NL = 0x00000100L;
+	public static final long INDEX_PERIOD = 0x00000200L;
+	public static final long INDEX_PLUS = 0x00000400L;
+	public static final long INDEX_RPAREN = 0x00000800L;
+	public static final long INDEX_SEMICOLON = 0x00001000L;
+	public static final long INDEX_SLASH = 0x00002000L;
+	public static final long INDEX_TAB = 0x00004000L;
+	public static final long INDEX_TILDE = 0x00008000L;
+	public static final long INDEX_UNDERSCORE = 0x00010000L;
 	private static final long serialVersionUID = -4315882565512778401L;
 
 	/**
@@ -461,10 +462,28 @@ public class Masker implements Serializable {
 					betweenMasks = betweenMasks.substring(0, nextMaskOffset);
 					betweenMasksEnd = unmasked.indexOf(betweenMasks);
 					JSONObject part = new JSONObject();
-					value = unmasked.substring(0, betweenMasksEnd).replace("\u223C", "~");
-					part.put(mask, value);
-					diffs.add(part);
-					unmasked = unmasked.substring(betweenMasksEnd);
+					if (betweenMasksEnd != -1) {
+					   value = unmasked.substring(0, betweenMasksEnd).replace("\u223C", "~");
+					   part.put(mask, value);
+					   diffs.add(part);
+					   unmasked = unmasked.substring(betweenMasksEnd);
+					} else {
+					   // keep unmasked as it was
+					   /**
+					    * this is due to a buggy regex that results in a 
+					    * dual tilde situation. Hopefully the additional 
+					    * processing added will avoid this situation.
+					    * 
+					    * the order of the regex in the templates array 
+					    * is important to ensure larger regex patterns are
+					    * masked before smaller ones that might overlap.
+					    */
+					   System.err.println("Could not find a match for \""+betweenMasks+
+					      "\" in the unmasked content: \""+unmasked+"\" so we "+
+					      "could not find the difference to report correctly.\n"+
+					      "The masked segment following the mask \""+mask+"\" is: \""+
+					      masked+"\"");
+					}
 					maskOffset = masked.indexOf("~");
 					continue;
 				} // else no further mask so remainder is masked value
@@ -514,7 +533,7 @@ public class Masker implements Serializable {
 					+ "\nthe URL will not be masked. If the masked dialog file" //
 					+ "\nhas at least the minimum number of dialogs per day," //
 					+ "\nthe dialog content will be saved to the output directory " + pgm._outputPath); //
-			if (MaskerUtils.prompt("Press q to quit or press Enter to continue...").length() == 0) {
+			if (MaskerUtils.prompt("Press q to quit or press Enter to continue	").length() == 0) {
 				try {
 
 					JSONObject _whitelist = _mapWhitelistObjs.get(_tenantID);
@@ -575,6 +594,37 @@ public class Masker implements Serializable {
 			System.out.println();
 		}
 		System.out.println("Goodbye");
+	}
+
+	/**
+	 * Splits the input String into an array of Strings, preserving situations with
+	 * consecutive patterns (returned as empty strings in the array)
+	 * 
+	 * @param input
+	 *                The input string to be split.
+	 * @param pattern
+	 *                the pattern used to perform the splitting
+	 * @return array of strings that were terminated by the patterns
+	 */
+	static public String[] splitOnPattern(String input, String pattern) {
+		ArrayList<String> lines = new ArrayList<String>();
+		if (input != null) {
+			int nlIndex = input.indexOf(pattern);
+			if (nlIndex != -1) {
+				while (nlIndex > -1) {
+					lines.add(input.substring(0, nlIndex));
+					nlIndex += pattern.length();
+					input = input.substring(nlIndex);
+					nlIndex = input.indexOf(pattern);
+				}
+				if (input.length() == 0) {
+					lines.add(""); // ending case
+				}
+			} else {
+				lines.add(input);
+			}
+		}
+		return lines.toArray(new String[0]);
 	}
 
 	/**
@@ -761,6 +811,13 @@ public class Masker implements Serializable {
 				}
 			}
 		}
+
+		// append the global masks to transactional masks
+		synchronized (_initializing) {
+			patterns.addAll(_patterns);
+			masks.addAll(_masks);
+		}
+
 		Pattern pattern = null;
 		Matcher matcher = null;
 		for (Object obj : unmasked) {
@@ -778,24 +835,43 @@ public class Masker implements Serializable {
 					}
 				}
 
-				synchronized (_initializing) {
-					// next apply global templates
-					for (int i = 0; i < _patterns.size(); i++) {
-						pattern = _patterns.get(i);
-						matcher = pattern.matcher(line);
-						if (matcher.find()) {
-							line = matcher.replaceAll(_maskPrefix + _masks.get(i) + _maskPrefix);
-						}
-					}
-				}
-
 				// finally do standard masking
 				String[] mixedCaseWords = splitWordsOnChar(line, ' ');
+			     // need to treat existing masks as words
+		      List<String> withMasks = new ArrayList<String>();
+		      boolean hasPrefix = false;
+		      String saveWord = "";
+		      for (String testWord : mixedCaseWords) {
+		         if (testWord.contains("\u223C")) {
+		            String[] mixedCaseTildeWords = splitWordsOnChar(testWord, '\u223C');
+		            for (String splitWord: mixedCaseTildeWords) {
+		               if (splitWord.length() == 0) {
+		                  if (!hasPrefix) {
+		                     hasPrefix = true;
+		                  } else {
+	                        saveWord = saveWord + "\u223C";
+	                        withMasks.add(saveWord);
+	                        hasPrefix = false;
+		                  }
+		                  continue;
+		               }
+		               if (hasPrefix == true) {
+		                  saveWord = "\u223C"+splitWord;
+		                  continue;
+		               }
+		               withMasks.add(splitWord);
+		            }
+		         } else {
+		            withMasks.add(testWord);
+		         }
+		      }
+		      mixedCaseWords = withMasks.toArray(new String[0]);
+
 				StringBuffer sb = new StringBuffer();
 				String lastWordMasked = "";
 				lastWordMasked = processWords(mixedCaseWords, ' ', sb, lastWordMasked, counts, maskNumbers, _whitelist,
 						_names, _geolocations, _profanities, _queryStringContainsList, _domainPrefixList, _domainSuffixList,
-						_patterns, _masks);
+						patterns, masks);
 				maskedLine = MaskerUtils.trimSpaces(sb.toString());
 			}
 			masked.add(maskedLine);
@@ -934,6 +1010,8 @@ public class Masker implements Serializable {
 				jObj = (JSONObject) obj;
 				unmaskedStr = (String) jObj.get("utterance");
 				maskedStr = (String) masked.get(i);
+				System.out.println("unmaskedStr:\n\""+unmaskedStr+"\"");
+				System.out.println("maskedStr:\n\""+maskedStr+"\"");
 				getDifferences(unmaskedStr, maskedStr, diffs);
 				jObj.put("utterance", ((String) masked.get(i)).replace("\u223C", "~"));
 				i++;
@@ -1005,11 +1083,11 @@ public class Masker implements Serializable {
 		result.put("message", msg);
 		Long turn = (Long) volley.get("turn");
 		if (turn != null) {
-		   result.put("turn", turn);
+			result.put("turn", turn);
 		}
 		String skill = (String) volley.get("skill");
 		if (skill != null) {
-		   result.put("skill", skill);
+			result.put("skill", skill);
 		}
 		return result;
 	}
@@ -1132,12 +1210,12 @@ public class Masker implements Serializable {
 						sb.append(_maskURL);
 						lastWordMasked = _maskURL;
 					} else {
-                  /**
-                   * Back out last splitchar since we are reusing the same mask for a 
-                   * pattern like namesplitcharname to result in "~name~" and not
-                   * "~name~ " (assuming space is the splitchar) 
-                   */
-                  sb.setLength(Math.max(sb.length() - 1, 0));
+						/**
+						 * Back out last splitchar since we are reusing the same mask for a pattern like
+						 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+						 * the splitchar)
+						 */
+						sb.setLength(Math.max(sb.length() - 1, 0));
 						sb.append(wordParts[2]);
 						if (wordParts[2].length() > 0) {
 							lastWordMasked = "";
@@ -1178,12 +1256,12 @@ public class Masker implements Serializable {
 						sb.append(_maskURL);
 						lastWordMasked = _maskURL;
 					} else {
-					   /**
-					    * Back out last splitchar since we are reusing the same mask for a 
-					    * pattern like namesplitcharname to result in "~name~" and not
-					    * "~name~ " (assuming space is the splitchar) 
-					    */
-					   sb.setLength(Math.max(sb.length() - 1, 0));
+						/**
+						 * Back out last splitchar since we are reusing the same mask for a pattern like
+						 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+						 * the splitchar)
+						 */
+						sb.setLength(Math.max(sb.length() - 1, 0));
 						sb.append(wordParts[2]);
 						if (wordParts[2].length() > 0) {
 							lastWordMasked = "";
@@ -1200,122 +1278,130 @@ public class Masker implements Serializable {
 				}
 				continue;
 			}
-			int processed = 0;
+			long processed = 0L;
 			// does this need to deal with newlines, carriage returns, tabs, or
 			// slashes
-			if (processed == 0 && wordParts[1].contains("\n")) {
+			if (processed == 0L && wordParts[1].contains("\n")) {
 				String[] mixedCaseNLWords = splitWordsOnChar(mixedCaseCleansedWord, '\n');
 				lastWordMasked = processWords(mixedCaseNLWords, '\n', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_NL;
 			}
-			if (processed == 0 && wordParts[1].contains("\r")) {
+			if (processed == 0L && wordParts[1].contains("\r")) {
 				String[] mixedCaseCRWords = splitWordsOnChar(mixedCaseCleansedWord, '\r');
 				lastWordMasked = processWords(mixedCaseCRWords, '\r', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_CR;
 			}
-			if (processed == 0 && wordParts[1].contains("\t")) {
+			if (processed == 0L && wordParts[1].contains("\t")) {
 				String[] mixedCaseTabWords = splitWordsOnChar(mixedCaseCleansedWord, '\t');
 				lastWordMasked = processWords(mixedCaseTabWords, '\t', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_TAB;
 			}
-			if (processed == 0 && wordParts[1].contains("/")) {
+			if (processed == 0L && wordParts[1].contains("/")) {
 				String[] mixedCaseSlashWords = splitWordsOnChar(mixedCaseCleansedWord, '/');
 				lastWordMasked = processWords(mixedCaseSlashWords, '/', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_SLASH;
 			}
-			if (processed == 0 && wordParts[1].contains(".")) {
+			if (processed == 0L && wordParts[1].contains(".")) {
 				String[] mixedCasePeriodWords = splitWordsOnChar(mixedCaseCleansedWord, '.');
 				lastWordMasked = processWords(mixedCasePeriodWords, '.', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_PERIOD;
 			}
-			if (processed == 0 && wordParts[1].contains("-")) {
+			if (processed == 0L && wordParts[1].contains("-")) {
 				String[] mixedCaseHyphenWords = splitWordsOnChar(mixedCaseCleansedWord, '-');
 				lastWordMasked = processWords(mixedCaseHyphenWords, '-', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_HYPHEN;
 			}
-			if (processed == 0 && wordParts[1].contains("(")) {
+			if (processed == 0L && wordParts[1].contains("(")) {
 				String[] mixedCaseLParenWords = splitWordsOnChar(mixedCaseCleansedWord, '(');
 				lastWordMasked = processWords(mixedCaseLParenWords, '(', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_LPAREN;
 			}
-			if (processed == 0 && wordParts[1].contains(":")) {
+			if (processed == 0L && wordParts[1].contains(":")) {
 				String[] mixedCaseColonWords = splitWordsOnChar(mixedCaseCleansedWord, ':');
 				lastWordMasked = processWords(mixedCaseColonWords, ':', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_COLON;
 			}
-			if (processed == 0 && wordParts[1].contains("_")) {
+			if (processed == 0L && wordParts[1].contains("_")) {
 				String[] mixedCaseUnderscoreWords = splitWordsOnChar(mixedCaseCleansedWord, '_');
 				lastWordMasked = processWords(mixedCaseUnderscoreWords, '_', sb, lastWordMasked, counts, maskNumbers,
 						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
 						domainSuffixList, patterns, masks);
 				processed |= INDEX_UNDERSCORE;
 			}
-			if (processed == 0 && wordParts[1].contains(">")) {
+			if (processed == 0L && wordParts[1].contains(">")) {
 				String[] mixedCaseGTWords = splitWordsOnChar(mixedCaseCleansedWord, '>');
 				lastWordMasked = processWords(mixedCaseGTWords, '>', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_GT;
 			}
-			if (processed == 0 && wordParts[1].contains(",")) {
+			if (processed == 0L && wordParts[1].contains(",")) {
 				String[] mixedCaseCommaWords = splitWordsOnChar(mixedCaseCleansedWord, ',');
 				lastWordMasked = processWords(mixedCaseCommaWords, ',', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_COMMA;
 			}
-			if (processed == 0 && wordParts[1].contains("+")) {
+			if (processed == 0L && wordParts[1].contains("+")) {
 				String[] mixedCasePlusWords = splitWordsOnChar(mixedCaseCleansedWord, '+');
 				lastWordMasked = processWords(mixedCasePlusWords, '+', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_PLUS;
 			}
-			if (processed == 0 && wordParts[1].contains(";")) {
+			if (processed == 0L && wordParts[1].contains(";")) {
 				String[] mixedCaseSemiColonWords = splitWordsOnChar(mixedCaseCleansedWord, ';');
 				lastWordMasked = processWords(mixedCaseSemiColonWords, ';', sb, lastWordMasked, counts, maskNumbers,
 						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
 						domainSuffixList, patterns, masks);
 				processed |= INDEX_SEMICOLON;
 			}
-			if (processed == 0 && wordParts[1].contains(")")) {
+			if (processed == 0L && wordParts[1].contains(")")) {
 				String[] mixedCaseRParenWords = splitWordsOnChar(mixedCaseCleansedWord, ')');
 				lastWordMasked = processWords(mixedCaseRParenWords, ')', sb, lastWordMasked, counts, maskNumbers, whitelist,
 						names, geolocations, profanities, queryStringContainsList, domainPrefixList, domainSuffixList,
 						patterns, masks);
 				processed |= INDEX_RPAREN;
 			}
-			if (processed == 0 && wordParts[1].contains("\\")) {
+			if (processed == 0L && wordParts[1].contains("\\")) {
 				String[] mixedCaseBackslashWords = splitWordsOnChar(mixedCaseCleansedWord, '\\');
 				lastWordMasked = processWords(mixedCaseBackslashWords, '\\', sb, lastWordMasked, counts, maskNumbers,
 						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
 						domainSuffixList, patterns, masks);
 				processed |= INDEX_BACKSLASH;
 			}
-			if (processed == 0 && wordParts[1].contains("\u2014")) {
-				String[] mixedCaseBackslashWords = splitWordsOnChar(mixedCaseCleansedWord, '\u2014');
-				lastWordMasked = processWords(mixedCaseBackslashWords, '\u2014', sb, lastWordMasked, counts, maskNumbers,
+			if (processed == 0L && wordParts[1].contains("\u2014")) {
+				String[] mixedCaseEMDashWords = splitWordsOnChar(mixedCaseCleansedWord, '\u2014');
+				lastWordMasked = processWords(mixedCaseEMDashWords, '\u2014', sb, lastWordMasked, counts, maskNumbers,
 						whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
 						domainSuffixList, patterns, masks);
 				processed |= INDEX_EM_DASH;
 			}
-			if (processed == 0) {
+//			// important this is last
+//         if (processed == 0L && wordParts[1].contains("\u223C")) {
+//            String[] mixedCaseTildeWords = splitWordsOnChar(mixedCaseCleansedWord, '~');
+//            lastWordMasked = processWords(mixedCaseTildeWords, '\u223C', sb, lastWordMasked, counts, maskNumbers,
+//                  whitelist, names, geolocations, profanities, queryStringContainsList, domainPrefixList,
+//                  domainSuffixList, patterns, masks);
+//            processed |= INDEX_TILDE;
+//         }
+			if (processed == 0L) {
 				// process as a normal word
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				String testWord = wordParts[1];
@@ -1327,12 +1413,12 @@ public class Masker implements Serializable {
 						if (lastWordMasked.equals(_maskName) == false) {
 							sb.append(_maskName);
 						} else {
-	                  /**
-	                   * Back out last splitchar since we are reusing the same mask for a 
-	                   * pattern like namesplitcharname to result in "~name~" and not
-	                   * "~name~ " (assuming space is the splitchar) 
-	                   */
-	                  sb.setLength(Math.max(sb.length() - 1, 0));
+							/**
+							 * Back out last splitchar since we are reusing the same mask for a pattern like
+							 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+							 * the splitchar)
+							 */
+							sb.setLength(Math.max(sb.length() - 1, 0));
 						}
 						lastWordMasked = _maskName;
 					} else if (geolocations.get(testWord) != null) {
@@ -1340,26 +1426,26 @@ public class Masker implements Serializable {
 						if (lastWordMasked.equals(_maskGeo) == false) {
 							sb.append(_maskGeo);
 						} else {
-                     /**
-                      * Back out last splitchar since we are reusing the same mask for a 
-                      * pattern like namesplitcharname to result in "~name~" and not
-                      * "~name~ " (assuming space is the splitchar) 
-                      */
-                     sb.setLength(Math.max(sb.length() - 1, 0));
-                  }
+							/**
+							 * Back out last splitchar since we are reusing the same mask for a pattern like
+							 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+							 * the splitchar)
+							 */
+							sb.setLength(Math.max(sb.length() - 1, 0));
+						}
 						lastWordMasked = _maskGeo;
 					} else if (profanities.get(testWord) != null) {
 						counts.put("maskedBad", ((Long) counts.get("maskedBad")) + 1L);
 						if (lastWordMasked.equals(_maskBad) == false) {
 							sb.append(_maskBad);
 						} else {
-                     /**
-                      * Back out last splitchar since we are reusing the same mask for a 
-                      * pattern like namesplitcharname to result in "~name~" and not
-                      * "~name~ " (assuming space is the splitchar) 
-                      */
-                     sb.setLength(Math.max(sb.length() - 1, 0));
-                  }
+							/**
+							 * Back out last splitchar since we are reusing the same mask for a pattern like
+							 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+							 * the splitchar)
+							 */
+							sb.setLength(Math.max(sb.length() - 1, 0));
+						}
 						lastWordMasked = _maskBad;
 					} else {
 						// is this all numbers?
@@ -1369,13 +1455,13 @@ public class Masker implements Serializable {
 								if (lastWordMasked.equals(_maskNum) == false) {
 									sb.append(_maskNum);
 								} else {
-		                     /**
-		                      * Back out last splitchar since we are reusing the same mask for a 
-		                      * pattern like namesplitcharname to result in "~name~" and not
-		                      * "~name~ " (assuming space is the splitchar) 
-		                      */
-		                     sb.setLength(Math.max(sb.length() - 1, 0));
-		                  }
+									/**
+									 * Back out last splitchar since we are reusing the same mask for a pattern like
+									 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+									 * the splitchar)
+									 */
+									sb.setLength(Math.max(sb.length() - 1, 0));
+								}
 								lastWordMasked = _maskNum;
 							} else {
 								// allow this word
@@ -1387,13 +1473,13 @@ public class Masker implements Serializable {
 							if (lastWordMasked.equals(_maskMisc) == false) {
 								sb.append(_maskMisc);
 							} else {
-	                     /**
-	                      * Back out last splitchar since we are reusing the same mask for a 
-	                      * pattern like namesplitcharname to result in "~name~" and not
-	                      * "~name~ " (assuming space is the splitchar) 
-	                      */
-	                     sb.setLength(Math.max(sb.length() - 1, 0));
-	                  }
+								/**
+								 * Back out last splitchar since we are reusing the same mask for a pattern like
+								 * namesplitcharname to result in "~name~" and not "~name~ " (assuming space is
+								 * the splitchar)
+								 */
+								sb.setLength(Math.max(sb.length() - 1, 0));
+							}
 							lastWordMasked = _maskMisc;
 						}
 					}
@@ -1749,8 +1835,7 @@ public class Masker implements Serializable {
 			_tenantID = args[0];
 		}
 		_setTenantIDs.add(_tenantID);
-		String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + _tenantID
-				+ File.separator;
+		String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + _tenantID + File.separator;
 
 		try {
 			if (args.length < 2) {

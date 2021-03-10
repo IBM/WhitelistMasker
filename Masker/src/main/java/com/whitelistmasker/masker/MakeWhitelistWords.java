@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import com.api.json.JSONArray;
 import com.api.json.JSONObject;
 
 /**
@@ -165,6 +166,7 @@ public class MakeWhitelistWords implements Serializable {
 		JSONObject _profanities = new JSONObject();
 		JSONObject _profanitiesRemoved = new JSONObject();
 		Set<String> _profanitiesReviewed = new HashSet<String>();
+		JSONObject _emojis = new JSONObject();
 
 		/**
 		 * Note, words containing an underscored are ignored so an underscore can also
@@ -304,6 +306,26 @@ public class MakeWhitelistWords implements Serializable {
 			}
 
 			System.out.println("After adding the override words the whitelist size is " + _potentialWhitelistWords.size());
+			
+			try {
+   			System.out.println("Loading emoji_overrides.json");
+   			_emojis = MaskerUtils.loadJSONFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "emoji_overrides.json");
+   			JSONArray emoji_overrides = (JSONArray)_emojis.get("emoji_overrides");
+   			JSONObject emoji_obj = null;
+   			String emoji_value = "";
+   			String emoji_label = "";
+   			for (Object obj : emoji_overrides) {
+   			   emoji_obj = (JSONObject) obj;
+   			   for (Iterator<String>it = emoji_obj.keySet().iterator();it.hasNext();) {
+   			      emoji_label = it.next();
+   			      emoji_value = (String)emoji_obj.get(emoji_label);
+   			      _potentialWhitelistWords.put(emoji_value, emoji_label.toLowerCase());
+   			   }
+   			}
+			} catch (Exception e) {
+			   // ignore if not found, just show the error
+			   System.out.println("Could not process the emoji_overrides.json file. Error: "+e.getLocalizedMessage());
+			}
 
 			MaskerUtils.saveJSONFile(
 					MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "whitelist-words.json",
