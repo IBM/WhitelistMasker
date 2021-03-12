@@ -945,7 +945,7 @@ public class Masker implements Serializable {
 			if (msg.startsWith("Welcome ")) {
 				testIndex = msg.indexOf(". Your chat");
 				if (testIndex > 8) {
-					updateMasked(msg.substring(8, testIndex));
+					updateMasked(msg.substring(8, testIndex),maskNumbers);
 					msg = "Welcome " + _maskName + msg.substring(testIndex);
 					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
 				}
@@ -954,7 +954,7 @@ public class Masker implements Serializable {
 			if (msg.startsWith("Customer ")) {
 				testIndex = msg.indexOf(" has left the chat");
 				if (testIndex > 9) {
-					updateMasked(msg.substring(9, testIndex));
+					updateMasked(msg.substring(9, testIndex),maskNumbers);
 					msg = "Customer " + _maskName + msg.substring(testIndex);
 					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
 				}
@@ -964,7 +964,7 @@ public class Masker implements Serializable {
 			if (msgCount == 0 && msg.startsWith("Hello ")) {
 				testIndex = msg.indexOf("\n");
 				if (testIndex > 6) {
-					updateMasked(msg.substring(6));
+					updateMasked(msg.substring(6),maskNumbers);
 					msg = "Hello " + _maskName + "\n";
 					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
 				}
@@ -1198,7 +1198,7 @@ public class Masker implements Serializable {
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				// just treat as a single word URL needing to be masked
 				if (whitelist.get(url) == null) {
-					updateMasked(url);
+					updateMasked(url,maskNumbers);
 					counts.put("maskedURL", ((Long) counts.get("maskedURL")) + 1L);
 					// word should be masked unless last word was masked
 					if (lastWordMasked.equals(_maskURL) == false) {
@@ -1244,7 +1244,7 @@ public class Masker implements Serializable {
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				// just treat as a single word URL needing to be masked
 				if (whitelist.get(wordParts[1]) == null && masks.contains(wordParts[1]) == false) {
-					updateMasked(wordParts[1]);
+					updateMasked(wordParts[1],maskNumbers);
 					counts.put("maskedURL", ((Long) counts.get("maskedURL")) + 1L);
 					// word should be masked unless last word was masked
 					if (lastWordMasked.equals(_maskURL) == false) {
@@ -1405,7 +1405,7 @@ public class Masker implements Serializable {
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				String testWord = wordParts[1];
 				if (whitelist.get(testWord) == null && masks.contains(testWord) == false) {
-					updateMasked(testWord);
+					updateMasked(testWord,maskNumbers);
 					// determine the type of mask to apply
 					if (names.get(testWord) != null) {
 						counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
@@ -1544,8 +1544,13 @@ public class Masker implements Serializable {
 	 * 
 	 * @param masked
 	 *               masked word to be counted
+	 * @param maskNumbers
+	 *               true if words comprising all numbers should be masked
 	 */
-	public static void updateMasked(String masked) {
+	public static void updateMasked(String masked,Boolean maskNumbers) {
+	   if (!maskNumbers && isNumbers(masked)) {
+	      return;
+	   }
 		if (masked != null && masked.trim().length() > 0) {
 			masked = masked.toLowerCase();
 			int index = masked.indexOf(" ");
