@@ -1153,11 +1153,20 @@ public class Masker implements Serializable {
 			String[] wordParts = MaskerUtils.cleanWord(checkWord);
 			if (wordParts[1].length() == 0) {
 				// checkWord may only have non-word characters
+			   // this should avoid getting double tilde's like ~~misc~~ for ~acct~~mask~
 				counts.put("words", ((Long) counts.get("words")) + 1L);
 				sb.append(word);
 				// sb.append(splitChar);
 				lastWordMasked = "";
 				continue;
+			}
+			if ("~".equals(wordParts[0]) && "~".equals(wordParts[2])) {
+            // checkWord is already masked
+            counts.put("words", ((Long) counts.get("words")) + 1L);
+            sb.append(word);
+            // sb.append(splitChar);
+            lastWordMasked = "";
+            continue;
 			}
 			// otherwise, there is content to be checked for masking
 			if (wordParts[0].length() > 0) {
