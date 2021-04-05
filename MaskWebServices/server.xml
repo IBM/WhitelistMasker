@@ -3,6 +3,7 @@
 
 	<!-- Enable features -->
 	<featureManager>
+		<feature>appSecurity-3.0</feature>
 		<feature>webProfile-8.0</feature>
 		<feature>restConnector-2.0</feature>
 		<feature>jaxrs-2.1</feature>
