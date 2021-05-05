@@ -1064,9 +1064,9 @@ public class Masker implements Serializable {
 			Boolean maskNumbers) throws Exception {
 		JSONObject result = new JSONObject();
 		// set up volley issuer
-		if (volley.get("agent") != null) {
-			result.put("agent", _maskName);
-			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+		String agentID = (String)volley.get("agent");
+		if (agentID != null) {
+			result.put("agent",agentID); // preserve the agentID
 		} else if (volley.get("bot") != null) {
 			result.put("bot", _maskName);
 			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
