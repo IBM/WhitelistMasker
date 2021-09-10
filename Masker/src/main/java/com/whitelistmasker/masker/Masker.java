@@ -670,6 +670,7 @@ public class Masker implements Serializable {
 		JSONArray unmasked = (JSONArray) request.get("unmasked");
 		JSONArray masked = new JSONArray();
 		JSONArray errors = new JSONArray();
+		response.put("request", request);
 		response.put("masked", masked);
 		response.put("errors", errors);
 		String tenantID = (String) request.get("tenantID");
@@ -1001,6 +1002,7 @@ public class Masker implements Serializable {
 		newRequest.put("tenantID", (String) request.get("tenantID"));
 		JSONObject newResponse = Masker.maskContent(newRequest);
 		JSONObject response = new JSONObject();
+		response.put("request", request);
 		response.put("errors", newResponse.get("errors"));
 		JSONArray masked = (JSONArray) newResponse.get("masked");
 		JSONArray diffs = new JSONArray();
@@ -1198,7 +1200,7 @@ public class Masker implements Serializable {
 				// now handle the URL part
 				if (acceptableURLReference(url, queryStringContainsList, domainPrefixList, domainSuffixList)) {
 					counts.put("words", ((Long) counts.get("words")) + 1L);
-					sb.append(mixedCaseCleansedWord);
+					sb.append(url); // was mixedCaseWord
 					lastWordMasked = "";
 					sb.append(wordParts[2]);
 					sb.append(splitChar);
