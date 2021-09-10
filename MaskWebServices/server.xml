@@ -1,44 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server description="new server">
 
-	<!-- Enable features -->
-	<featureManager>
-		<feature>appSecurity-3.0</feature>
-		<feature>webProfile-8.0</feature>
-		<feature>restConnector-2.0</feature>
-		<feature>jaxrs-2.1</feature>
-	</featureManager>
+   <!-- Enable features -->
+   <featureManager>
+      <feature>appSecurity-3.0</feature>
+      <feature>webProfile-8.0</feature>
+      <feature>restConnector-2.0</feature>
+      <feature>jaxrs-2.1</feature>
+      <feature>transportSecurity-1.0</feature>
+   </featureManager>
 
-	<cors allowCredentials="true" allowedHeaders="accept"
-		allowedMethods="GET, DELETE, POST, PUT"
-		allowedOrigins="http://localhost:9080" domain="/MaskWebServices"
-		maxAge="3600" />
+   <cors allowCredentials="true" allowedHeaders="accept"
+      allowedMethods="GET, DELETE, POST, PUT"
+      allowedOrigins="*" domain="/MaskWebServices"
+   maxAge="3600" />
 
-	<!-- USER REGISTRIES (using passw0rd) -->
-	<basicRegistry id="basic" realm="BasicRealm">
-		<user name="mask" password="{xor}Lz4sLCgwLTs=" />
-		<user name="nonadmin" password="{xor}Lz4sLCgwLTs=" />
-		<user name="admin" password="{xor}Lz4sLCgwLTs=" />
-		<user name="waauxsvcs" password="{xor}CB8rLG8xfg==" />
-	</basicRegistry>
+   <keyStore id="defaultKeyStore" location="${server.output.dir}/keystore.p12"
+      password="{xor}NDomDCswLToPKDs=" />
+   <ssl id="defaultSSLConfig" sslProtocol="TLSv1.2" />
 
-	<!-- To access this server from a remote client add a host attribute to 
-		the following element, e.g. host="*" and change -1 to 9443 or port for https -->
-	<httpEndpoint host="*" id="defaultHttpEndpoint"
-		httpPort="9080" httpsPort="-1" />
+   <!-- USER REGISTRIES (using passw0rd) -->
+   <basicRegistry id="basic" realm="BasicRealm">
+      <user name="mask" password="{xor}Lz4sLCgwLTs=" />
+      <user name="nonadmin" password="{xor}Lz4sLCgwLTs=" />
+      <user name="admin" password="{xor}Lz4sLCgwLTs=" />
+   </basicRegistry>
 
-	<!-- Automatically expand WAR files and EAR files -->
-	<applicationManager autoExpand="true" />
+   <!-- To access this server from a remote client add a host attribute to 
+   the following element, e.g. host="*" and change -1 to 9443 or port for https -->
+   <httpEndpoint host="*" id="defaultHttpEndpoint"
+   httpPort="9080" httpsPort="9980" />
 
-	<!-- keyStorePwd -->
-	<keyStore id="defaultKeyStore"
-		location="${server.output.dir}/keystore.p12"
-		password="{xor}NDomDCswLToPKDs=" />
+   <!-- Automatically expand WAR files and EAR files -->
+   <applicationManager autoExpand="true" />
 
-	<remoteFileAccess>
-		<writeDir>${server.config.dir}</writeDir>
-		<writeDir>${server.output.dir}</writeDir>
-		<writeDir>${wlp.user.dir}</writeDir>
-	</remoteFileAccess>
+   <!-- keyStorePwd
+   <keyStore id="defaultKeyStore"
+      location="${server.output.dir}/keystore.p12"
+   password="{xor}NDomDCswLToPKDs=" />
+   -->
+   
+   <remoteFileAccess>
+      <writeDir>${server.config.dir}</writeDir>
+      <writeDir>${server.output.dir}</writeDir>
+      <writeDir>${wlp.user.dir}</writeDir>
+   </remoteFileAccess>
 
 </server>
