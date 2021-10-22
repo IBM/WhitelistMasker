@@ -1,4 +1,5 @@
-FROM openliberty/open-liberty:full-java11-openj9-ubi
+#FROM openliberty/open-liberty:full-java11-openj9-ubi
+FROM openliberty/open-liberty:kernel-slim-java11-openj9-ubi
 
 ARG VERSION=1.1.4
 ARG REVISION=RELEASE
@@ -17,6 +18,9 @@ LABEL \
   description="This image contains the Open Source MaskWebServices microservice running with the Open Liberty runtime."
 
 COPY --chown=1001:0 MaskWebServices/server.xml /config/
+
+RUN features.sh
+
 COPY --chown=1001:0 MaskWebServices/target/*.war /config/dropins/
 COPY --chown=1001:0 MaskWebServices/properties/  /opt/ol/wlp/output/defaultServer/properties/
 # COPY --chown=1001:0 MaskWebServices/server.env /config/
@@ -29,9 +33,7 @@ COPY --chown=1001:0 Masker/target/Masker-1.1.4-jar-with-dependencies.jar /opt/ol
 USER root
 RUN yum clean all --disableplugin=subscription-manager && \
     yum -y update --disableplugin=subscription-manager && \
-    yum install --disableplugin=subscription-manager hostname -y && \
-    yum install --disableplugin=subscription-manager unzip -y && \
-    yum clean all && \
+    yum clean all --disableplugin=subscription-manager && \
     rm -rf /var/cache/yum /tmp/* /var/tmp/*
     
 ENV AIDEN_HOME=/opt/ol/wlp/output/defaultServer
