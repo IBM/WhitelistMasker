@@ -27,7 +27,7 @@ COPY --chown=1001:0 MaskWebServices/properties/  /opt/ol/wlp/output/defaultServe
 COPY --chown=1001:0 Masker/properties/  /opt/ol/wlp/output/defaultServer/properties/
 
 # copy the .jar containing the utility into the appropriate place (relative to properties directory)
-COPY --chown=1001:0 Masker/target/Masker-1.1.4-jar-with-dependencies.jar /opt/ol/wlp/output/defaultServer/Masker-1.1.4-jar-with-dependencies.jar
+COPY --chown=1001:0 Masker/target/Masker-1.1.5-jar-with-dependencies.jar /opt/ol/wlp/output/defaultServer/Masker-1.1.5-jar-with-dependencies.jar
 
 # Pick up security fixes
 USER root
