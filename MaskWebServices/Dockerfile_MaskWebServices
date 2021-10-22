@@ -1,7 +1,7 @@
 #FROM openliberty/open-liberty:full-java11-openj9-ubi
 FROM openliberty/open-liberty:kernel-slim-java11-openj9-ubi
 
-ARG VERSION=1.1.4
+ARG VERSION=1.1.5
 ARG REVISION=RELEASE
 
 LABEL \
