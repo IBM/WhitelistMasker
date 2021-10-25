@@ -1,8 +1,8 @@
-# Masker Project v1.1.5 #
+# Masker Project v1.1.6 #
 This is  an Eclipse Maven Java project.
 
 ### JDK Version ###
-Content has been build using the Open  JDK version 1.8.0_252-b09 available  for download from https://adoptopenjdk.net/
+Content has been build using the OpenJDK Runtime Environment (build 1.8.0_252-b09) available  for download from https://adoptopenjdk.net/
 
 ### Eclipse Version ###
 Projects  were developed in Eclipse 2021-09 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.

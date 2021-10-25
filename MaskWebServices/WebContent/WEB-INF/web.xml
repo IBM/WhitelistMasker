@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="MaskWebServices" version="3.1">
   <display-name>MaskWebServices</display-name>
-  <welcome-file-list>
+   <servlet>
+      <description>
+      JAX-RS Tools Generated - Do not modify</description>
+      <servlet-name>MaskWebServices</servlet-name>
+      <servlet-class>com.ibm.websphere.jaxrs.server.IBMRestServlet</servlet-class>
+      <init-param>
+         <param-name>javax.ws.rs.Application</param-name>
+         <param-value>com.whitelistmasker.services.MaskServicesApplication</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+      <enabled>true</enabled>
+      <async-supported>false</async-supported>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>MaskWebServices</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>

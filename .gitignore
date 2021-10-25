@@ -2,3 +2,9 @@
 /maskerwebservices.tar
 /maskersvcs.tar.gz
 /maskersvcs.tar
+/BuildTomcatMaskWebServices.sh
+/BuildWildFlyMaskWebServices.sh
+/DockerfileTomcat
+/DockerfileWildFly
+/tc_maskerwebservices.tar.gz
+/wf_maskerwebservices.tar.gz
