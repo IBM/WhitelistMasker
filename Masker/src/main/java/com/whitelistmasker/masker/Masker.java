@@ -59,7 +59,7 @@ public class Masker implements Serializable {
 	 * Class to manage associations of reference counts to words being masked
 	 *
 	 */
-	class Tuple {
+	public class Tuple {
 
 		Integer _count;
 		String _word;
@@ -72,7 +72,7 @@ public class Masker implements Serializable {
 		 * @param count
 		 *              count of references to the word
 		 */
-		Tuple(String word, Integer count) {
+		public Tuple(String word, Integer count) {
 			_word = word;
 			_count = count;
 		}
@@ -82,7 +82,7 @@ public class Masker implements Serializable {
 		 * 
 		 * @return count of references to the word
 		 */
-		Integer getCount() {
+		public Integer getCount() {
 			return _count;
 		}
 
@@ -91,7 +91,7 @@ public class Masker implements Serializable {
 		 * 
 		 * @return word being counted
 		 */
-		String getWord() {
+		public String getWord() {
 			return _word;
 		}
 
@@ -649,7 +649,7 @@ public class Masker implements Serializable {
 		counts.put("maskedBad", 0L);
 		counts.put("maskedGeo", 0L);
 		counts.put("maskedMisc", 0L);
-		counts.put("maskedNam", 0L);
+		counts.put("maskedName", 0L);
 		counts.put("maskedNum", 0L);
 		counts.put("maskedURL", 0L);
 
@@ -948,7 +948,7 @@ public class Masker implements Serializable {
 				if (testIndex > 8) {
 					updateMasked(msg.substring(8, testIndex),maskNumbers);
 					msg = "Welcome " + _maskName + msg.substring(testIndex);
-					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+					counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
 				}
 			}
 			// Customer X has left the chat
@@ -957,7 +957,7 @@ public class Masker implements Serializable {
 				if (testIndex > 9) {
 					updateMasked(msg.substring(9, testIndex),maskNumbers);
 					msg = "Customer " + _maskName + msg.substring(testIndex);
-					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+					counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
 				}
 			}
 			// for AskHR, first message is always Hello XXX using client's first
@@ -967,7 +967,7 @@ public class Masker implements Serializable {
 				if (testIndex > 6) {
 					updateMasked(msg.substring(6),maskNumbers);
 					msg = "Hello " + _maskName + "\n";
-					counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+					counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
 				}
 			}
 		}
@@ -1071,10 +1071,13 @@ public class Masker implements Serializable {
 			result.put("agent",agentID); // preserve the agentID
 		} else if (volley.get("bot") != null) {
 			result.put("bot", _maskName);
-			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
-		} else {
+			// counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
+		} else if (volley.get("system") != null) {
+         result.put("system", _maskName);
+         // counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
+      } else {
 			result.put("client", _maskName);
-			counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+			// counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
 		}
 		String date = (String) volley.get("datetime");
 		result.put("datetime", date);
@@ -1419,7 +1422,7 @@ public class Masker implements Serializable {
 					updateMasked(testWord,maskNumbers);
 					// determine the type of mask to apply
 					if (names.get(testWord) != null) {
-						counts.put("maskedNam", ((Long) counts.get("maskedNam")) + 1L);
+						counts.put("maskedName", ((Long) counts.get("maskedName")) + 1L);
 						if (lastWordMasked.equals(_maskName) == false) {
 							sb.append(_maskName);
 						} else {
@@ -2194,7 +2197,7 @@ public class Masker implements Serializable {
 		fileCounts.put("maskedBad", 0L);
 		fileCounts.put("maskedGeo", 0L);
 		fileCounts.put("maskedMisc", 0L);
-		fileCounts.put("maskedNam", 0L);
+		fileCounts.put("maskedName", 0L);
 		fileCounts.put("maskedNum", 0L);
 		fileCounts.put("maskedURL", 0L);
 		for (Object dialogObject : originalDialogs) {
@@ -2236,7 +2239,7 @@ public class Masker implements Serializable {
 			counts.put("maskedBad", 0L);
 			counts.put("maskedGeo", 0L);
 			counts.put("maskedMisc", 0L);
-			counts.put("maskedNam", 0L);
+			counts.put("maskedName", 0L);
 			counts.put("maskedNum", 0L);
 			counts.put("maskedURL", 0L);
 
@@ -2274,7 +2277,7 @@ public class Masker implements Serializable {
 			Long maskedBad = (Long) counts.get("maskedBad");
 			Long maskedGeo = (Long) counts.get("maskedGeo");
 			Long maskedMisc = (Long) counts.get("maskedMisc");
-			Long maskedNam = (Long) counts.get("maskedNam");
+			Long maskedNam = (Long) counts.get("maskedName");
 			Long maskedNum = (Long) counts.get("maskedNum");
 			Long maskedURL = (Long) counts.get("maskedURL");
 			Long masked = maskedBad + maskedGeo + maskedMisc + maskedNum + maskedURL;
@@ -2283,7 +2286,7 @@ public class Masker implements Serializable {
 			dialogHeader.put("maskedBad", maskedBad);
 			dialogHeader.put("maskedGeo", maskedGeo);
 			dialogHeader.put("maskedMisc", maskedMisc);
-			dialogHeader.put("maskedNam", maskedNam);
+			dialogHeader.put("maskedName", maskedNam);
 			dialogHeader.put("maskedNum", maskedNum);
 			dialogHeader.put("maskedURL", maskedURL);
 			dialogHeader.put("pctMasked", (_formatter.format(pctMasked)) + "%");
@@ -2291,7 +2294,7 @@ public class Masker implements Serializable {
 			fileCounts.put("maskedBad", ((Long) fileCounts.get("maskedBad")) + maskedBad);
 			fileCounts.put("maskedGeo", ((Long) fileCounts.get("maskedGeo")) + maskedGeo);
 			fileCounts.put("maskedMisc", ((Long) fileCounts.get("maskedMisc")) + maskedMisc);
-			fileCounts.put("maskedNam", ((Long) fileCounts.get("maskedNam")) + maskedNam);
+			fileCounts.put("maskedName", ((Long) fileCounts.get("maskedName")) + maskedNam);
 			fileCounts.put("maskedNum", ((Long) fileCounts.get("maskedNum")) + maskedNum);
 			fileCounts.put("maskedURL", ((Long) fileCounts.get("maskedURL")) + maskedURL);
 			maskedDialogObject.put("dialogHeader", dialogHeader);
@@ -2301,7 +2304,7 @@ public class Masker implements Serializable {
 		Long maskedBad = (Long) fileCounts.get("maskedBad");
 		Long maskedGeo = (Long) fileCounts.get("maskedGeo");
 		Long maskedMisc = (Long) fileCounts.get("maskedMisc");
-		Long maskedNam = (Long) fileCounts.get("maskedNam");
+		Long maskedNam = (Long) fileCounts.get("maskedName");
 		Long maskedNum = (Long) fileCounts.get("maskedNum");
 		Long maskedURL = (Long) fileCounts.get("maskedURL");
 		Long maskedCount = maskedBad + maskedGeo + maskedMisc + maskedNam + maskedNum + maskedURL;
