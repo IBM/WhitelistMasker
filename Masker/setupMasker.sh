@@ -5,7 +5,7 @@ then
     mkdir /store/WAAExec 
 fi
 cd /store/WAAExec
-docker cp maskersvcs:/opt/ol/wlp/usr/servers/defaultServer/apps/expanded/MaskWebServices-1.1.7.war/WEB-INF/lib/ ./Masker
+docker cp maskersvcs:/opt/ol/wlp/usr/servers/defaultServer/apps/expanded/MaskWebServices-1.1.8.war/WEB-INF/lib/ ./Masker
 cd Masker
 ln -s ../../WAAData/maskersvcs/properties properties
 ls -l

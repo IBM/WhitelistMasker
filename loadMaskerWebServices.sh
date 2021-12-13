@@ -1,6 +1,5 @@
 #! /bin/bash
-cp ./maskerwebservices.tar.gz ./maskersvcs.tar.gz
-docker load -i maskersvcs.tar.gz 
+docker load -i maskerwebservices.tar.gz 
 if [ ! -d "/store/WAALogs/maskersvcs" ] 
 then
    mkdir -p /store/WAALogs/maskersvcs
