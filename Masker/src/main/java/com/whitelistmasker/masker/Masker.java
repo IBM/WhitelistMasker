@@ -264,7 +264,7 @@ public class Masker implements Serializable {
 				List<Pattern> _patternsList = new ArrayList<Pattern>();
 				List<String> _masksList = new ArrayList<String>();
 
-				String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES + File.separator + tenantID
+				String filePrefix = "." + File.separator + MaskerConstants.Masker_DIR_PROPERTIES+ tenantID
 						+ File.separator;
 				try {
 					_whitelist = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _whitelistFileName);

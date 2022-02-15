@@ -1,7 +1,7 @@
 #FROM openliberty/open-liberty:full-java11-openj9-ubi
 FROM openliberty/open-liberty:kernel-slim-java11-openj9-ubi
 
-ARG VERSION=1.1.8
+ARG VERSION=1.1.9
 ARG REVISION=RELEASE
 
 LABEL \
@@ -27,7 +27,7 @@ COPY --chown=1001:0 MaskWebServices/properties/  /opt/ol/wlp/output/defaultServe
 COPY --chown=1001:0 Masker/properties/  /opt/ol/wlp/output/defaultServer/properties/
 
 # copy the .jar containing the utility into the appropriate place (relative to properties directory)
-COPY --chown=1001:0 Masker/target/Masker-1.1.8-jar-with-dependencies.jar /opt/ol/wlp/output/defaultServer/Masker-1.1.8-jar-with-dependencies.jar
+COPY --chown=1001:0 Masker/target/Masker-1.1.9-jar-with-dependencies.jar /opt/ol/wlp/output/defaultServer/Masker-1.1.9-jar-with-dependencies.jar
 
 # Pick up security fixes
 USER root
