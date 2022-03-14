@@ -174,13 +174,7 @@ public class MakeWhitelistWords implements Serializable {
 		 */
 		try {
 			System.out.println("Populate white-list words from sources.");
-
-			System.out.println("Loading google-10000-english-no-swears.txt");
-			List<String> words = MaskerUtils
-					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "google_words.txt");
-			System.out.println(
-					"Added " + addWordsToJSONObject(words, _potentialWhitelistWords, "google_word", true) + "google_words.");
-
+			List<String> words = new ArrayList<String>();
 			System.out.println("Loading umich-words.txt");
 			words = MaskerUtils
 					.loadTextFile(MaskerConstants.Masker_DIR_PROPERTIES + tenantID + File.separator + "umich-words.txt");
