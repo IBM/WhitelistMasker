@@ -270,36 +270,37 @@ public class Masker implements Serializable {
 					_whitelist = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _whitelistFileName);
 					if (_whitelist == null) {
 						System.out.println("Can not find the whitelist key in the file " + filePrefix + _whitelistFileName);
-						return false;
+						System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+						continue;
 					}
 				} catch (Exception e) {
 					System.out
 							.println("Error loading file " + filePrefix + _whitelistFileName + ": " + e.getLocalizedMessage());
-					e.printStackTrace();
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 				try {
 					_names = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _namesFileName);
 				} catch (Exception e) {
 					System.out.println("Error loading file " + filePrefix + _namesFileName + ": " + e.getLocalizedMessage());
-					e.printStackTrace();
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 				try {
 					_geolocations = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _geolocationsFileName);
 				} catch (Exception e) {
 					System.out.println(
 							"Error loading file " + filePrefix + _geolocationsFileName + ": " + e.getLocalizedMessage());
-					e.printStackTrace();
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 				try {
 					_profanities = (JSONObject) MaskerUtils.loadJSONFile(filePrefix + _profanitiesFileName);
 				} catch (Exception e) {
 					System.out.println(
 							"Error loading file " + filePrefix + _profanitiesFileName + ": " + e.getLocalizedMessage());
-					e.printStackTrace();
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 				try {
 					List<String> domainPrefixList = MaskerUtils.loadTextFile(filePrefix + _domainPrefixesFile);
@@ -312,7 +313,8 @@ public class Masker implements Serializable {
 				} catch (Exception e) {
 					System.out.println(
 							"Error loading file " + filePrefix + _domainPrefixesFile + ": " + e.getLocalizedMessage());
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 				try {
 					List<String> domainSuffixList = MaskerUtils.loadTextFile(filePrefix + _domainSuffixesFile);
@@ -325,7 +327,8 @@ public class Masker implements Serializable {
 				} catch (Exception e) {
 					System.out.println(
 							"Error loading file " + filePrefix + _domainSuffixesFile + ": " + e.getLocalizedMessage());
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 				try {
 					List<String> queryStringContainsList = MaskerUtils.loadTextFile(filePrefix + _queryStringContainsFile);
@@ -338,7 +341,8 @@ public class Masker implements Serializable {
 				} catch (Exception e) {
 					System.out.println(
 							"Error loading file " + filePrefix + _queryStringContainsFile + ": " + e.getLocalizedMessage());
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
 
 				try {
@@ -393,8 +397,10 @@ public class Masker implements Serializable {
 				} catch (Exception e) {
 					System.out
 							.println("Error loading file " + filePrefix + _maskTemplatesFile + ": " + e.getLocalizedMessage());
-					return false;
+					System.out.println("Ignoring directory \""+filePrefix+"\" as an invalid tenantID directory.");
+					continue;
 				}
+				// if we reach here we found all the artifacts in this directory to consider it a valid tenantID
 				_setTenantIDs.add(tenantID);
 				_mapMaskNumbers.put(tenantID, _maskNumbers);
 				_mapWhitelistObjs.put(tenantID, _whitelist);

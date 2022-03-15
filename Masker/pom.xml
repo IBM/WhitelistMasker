@@ -28,7 +28,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.whitelistmasker</groupId>
 	<artifactId>Masker</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 	<name>Masker</name>
 	<description>Whitelist Masker for Text Content</description>
 	<url>https://github.com/IBM/WhitelistMasker</url>
