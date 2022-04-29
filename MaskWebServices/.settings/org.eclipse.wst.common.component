@@ -184,7 +184,7 @@
         
         
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
-        <dependent-module archiveName="Masker-1.2.2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Masker/Masker">
+        <dependent-module archiveName="Masker-1.2.3.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Masker/Masker">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="API4JSON-2.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/com.api.json.api4json/com.api.json.api4json">
