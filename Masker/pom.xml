@@ -28,7 +28,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.whitelistmasker</groupId>
 	<artifactId>Masker</artifactId>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 	<name>Masker</name>
 	<description>Whitelist Masker for Text Content</description>
 	<url>https://github.com/IBM/WhitelistMasker</url>
@@ -68,12 +68,12 @@
     <dependency>
          <groupId>com.google.code.gson</groupId>
          <artifactId>gson</artifactId>
-         <version>2.9.0</version>
+         <version>2.9.1</version>
       </dependency>
       <dependency>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-databind</artifactId>
-          <version>2.13.2.1</version>
+          <version>2.14.0-rc1</version>
       </dependency> 
 		<dependency>
 			<groupId>com.github.wnm3</groupId>
@@ -180,7 +180,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.4.1</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -190,6 +190,7 @@
 					</execution>
 				</executions>
 				<configuration>
+				    <source>8</source>
 					<additionalOptions>
 						<additionalOption>-Xdoclint:none</additionalOption>
 					</additionalOptions>

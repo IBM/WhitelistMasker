@@ -1,4 +1,4 @@
-# Masker Project v1.2.3 #
+# Masker Project v1.2.4 #
 This is  an Eclipse Maven Java project.
 
 ### JDK Version ###
@@ -21,7 +21,7 @@ This showcases the newest feature to mask a conversation, and return the masked 
 
 **Below is an example of the console running TestWSdoMessageMasking:**
 ```
-Enter the tenant ID or q to exit (companyA):
+Enter the tenant ID or q to exit (companyA)&colon;
 
 Enter the filename of the web service properties file (MaskWebService.properties) or q  to quit:
 
@@ -33,7 +33,7 @@ Enter the hostname where the service is running or q to quit (localhost)
 
 Sending Request:
 {
-   "request": {
+   "request"&colon; {
       "maskNumbers": true,
       "messages": [
          {
