@@ -15,7 +15,7 @@ Each project contains a  properties directory where content used to configure th
 Each project can be  built by using the  command line: **mvn clean install** command in the project directory to write jar or war files to the target subdirectory. Alternativiely, right clicking the pom.xml file in Eclipse, selecting Run As... Maven build... and specifying  **clean  install** as the goals will build the project in Eclipse. 
 
 ### JDK Version
-Content has been build using the Open  JDK version 1.8.0_242_b08 available  for download from https://adoptopenjdk.net/
+Content has been build using the Open  JDK version 1.8.0_332_b09 available  for download from https://adoptium.net/temurin/archive/?version=8
 
 ### Eclipse Version
 Projects  were developed in Eclipse 2022-12 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.

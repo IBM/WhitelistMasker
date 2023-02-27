@@ -2,7 +2,7 @@
 This is  an Eclipse Maven Java project.
 
 ### JDK Version ###
-Content has been build using the IBM Semeru Runtime Open Edition (build 1.8.0_322-b06)
+Content has been build using the Open  JDK version 1.8.0_332_b09 available  for download from https://adoptium.net/temurin/archive/?version=8
 
 ### Eclipse Version ###
 Projects  were developed in Eclipse 2022-12 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.
