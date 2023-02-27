@@ -326,7 +326,7 @@ Goodbye
 ### TestWSupdateMasks ###
 Right click on TestWSupdateMasks and select Run As... / Java Application
 
-**Below is an example of the console running TestWSupdateMaska:**
+**Below is an example of the console running TestWSupdateMasks:**
 ```
 Enter the tenant ID or q to exit (companyA):
 
