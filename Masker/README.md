@@ -5,10 +5,10 @@ This is  an Eclipse Maven Java project.
 Content has been build using the IBM Semeru Runtime Open Edition (build 1.8.0_322-b06)
 
 ### Eclipse Version ###
-Projects  were developed in Eclipse 2021-09 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.
+Projects  were developed in Eclipse 2022-12 available from  https://www.eclipse.org/downloads/ installing the Java EE Profile during installation.
 
 ### Build ###
-Build using mvn clean install
+Build using mvn clean install -Dgpg-skip
 
 ### Testing ###
 If you have also built the MaskerWebServices project and installed the .war file in a Liberty server's dropins directory, and copied the properties from the MaskerWebServices and Masker into the Liberty server's directory and started the server, you can run these programs:
