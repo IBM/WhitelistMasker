@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-                                                                                                                                                                                                                                                                                                	
+                                                                                                                                                                                                                                                                                                    	
+    
     
     
     
@@ -72,7 +73,8 @@
     
     
     <wb-module deploy-name="MaskWebServices-1.2.5">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                		
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        		
+        
         
         
         
@@ -145,7 +147,8 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                		
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        		
+        
         
         
         
@@ -218,7 +221,8 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                		
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        		
+        
         
         
         
@@ -291,7 +295,8 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/.apt_generated"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                		
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        		
+        
         
         
         
@@ -364,7 +369,8 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/properties"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+        
         
         
         
@@ -430,7 +436,8 @@
         
         
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
-                                                                                                                                                                        
+                                                                                                                                                                                
+        
         
         
         
@@ -457,7 +464,8 @@
         <dependent-module archiveName="API4JSON-2.0.3.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/com.api.json.api4json/com.api.json.api4json">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                		
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        		
+        
         
         
         
@@ -530,7 +538,8 @@
         
         
         <property name="context-root" value="MaskWebServices"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+        
         
         
         
@@ -595,7 +604,8 @@
         
         
         <property name="java-output-path" value="/MaskWebServices/target/classes"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                	
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        	
+    
     
     
     
@@ -668,7 +678,8 @@
     
     
     </wb-module>
-                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                    
+
 
 
 
