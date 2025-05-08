@@ -1,10 +1,10 @@
 /**
- * (c) Copyright 2020 IBM Corporation
+ * (c) Copyright 2020-2023 IBM Corporation
  * 1 New Orchard Road, 
  * Armonk, New York, 10504-1722
  * United States
  * +1 914 499 1900
- * support: Nathaniel Mills wnm3@us.ibm.com
+ * Nathaniel Mills wnm3@us.ibm.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -391,8 +391,8 @@ public class MaskerUtils implements Serializable {
       String strHours = strTimeZone.substring(1, 3);
       String strMinutes = strTimeZone.substring(3, 5);
       try {
-         int iHours = new Integer(strHours).intValue();
-         int iMinutes = new Integer(strMinutes).intValue();
+         int iHours = Integer.valueOf(strHours).intValue();
+         int iMinutes = Integer.valueOf(strMinutes).intValue();
          iMillisecs = iMinutes * iMinuteMilliseconds;
          iMillisecs = iMillisecs + (iHours * iHourMilliseconds);
          if (strSign.startsWith("-") == true) {
@@ -1012,10 +1012,10 @@ public class MaskerUtils implements Serializable {
       Object objField = null;
       try {
          if (strField.indexOf('.') == -1) {
-            Integer iField = new Integer(strField);
+            Integer iField = Integer.valueOf(strField);
             objField = iField;
          } else {
-            Double dField = new Double(strField);
+            Double dField = Double.valueOf(strField);
             objField = dField;
          }
       } catch (Exception e) {
@@ -1260,7 +1260,7 @@ public class MaskerUtils implements Serializable {
       }
       int timeout = 10000;
       try {
-         timeout = new Integer(apitimeout);
+         timeout = Integer.valueOf(apitimeout);
          if (timeout < 0) {
             throw new Exception(
                "The apitimeout is less than zero milliseconds.");

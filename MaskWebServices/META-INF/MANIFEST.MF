@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Built-By: wnm3
-Build-Jdk: 1.8.0_242-b08
-Created-By: Nathaniel Mills
-Archiver-Version: Plexus Archiver

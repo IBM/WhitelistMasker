@@ -1,10 +1,10 @@
 /**
- * (c) Copyright 2020 IBM Corporation
+ * (c) Copyright 2020-2023 IBM Corporation
  * 1 New Orchard Road, 
  * Armonk, New York, 10504-1722
  * United States
  * +1 914 499 1900
- * support: Nathaniel Mills wnm3@us.ibm.com
+ * Nathaniel Mills wnm3@us.ibm.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2146,13 +2146,13 @@ public class Masker implements Serializable {
 		if (args == null || args.length < 11) {
 			tmp = MaskerUtils.prompt("Enter the minimum dialogs per day, or q to exit (" + _minDialogs + ")");
 			if (tmp == null || tmp.length() == 0) {
-				tmp = new Integer(_minDialogs).toString();
+				tmp = Integer.valueOf(_minDialogs).toString();
 			}
 			if ("q".equalsIgnoreCase(tmp)) {
 				return false;
 			}
 			try {
-				_minDialogs = new Integer(tmp);
+				_minDialogs = Integer.valueOf(tmp);
 				if (_minDialogs < 1) {
 					System.out.println("Minimum dialogs per day must be a positive integer.");
 					return false;
@@ -2163,7 +2163,7 @@ public class Masker implements Serializable {
 			}
 		} else {
 			try {
-				_minDialogs = new Integer(args[10]);
+				_minDialogs = Integer.valueOf(args[10]);
 				if (_minDialogs < 1) {
 					System.out.println("Minimum dialogs per day must be a positive integer.");
 					return false;
@@ -2182,10 +2182,10 @@ public class Masker implements Serializable {
 			if ("q".equalsIgnoreCase(tmp)) {
 				return false;
 			}
-			_maskNumbers = new Boolean(tmp);
+			_maskNumbers = Boolean.valueOf(tmp);
 			_mapMaskNumbers.put(_tenantID, _maskNumbers);
 		} else {
-			_maskNumbers = new Boolean(args[11]);
+			_maskNumbers = Boolean.valueOf(args[11]);
 		}
 		_isInitialized = true;
 		return true;
@@ -2246,7 +2246,7 @@ public class Masker implements Serializable {
 
 		JSONObject dialog = null;
 		JSONObject maskedVolley = null;
-		Long timeOffset = new Long(0L);
+		Long timeOffset = Long.valueOf(0L);
 		MaskerDate lastVolleyDate = null;
 		JSONObject fileCounts = new JSONObject();
 		fileCounts.put("words", 0L); // file word count

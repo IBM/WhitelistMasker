@@ -28,7 +28,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.whitelistmasker</groupId>
 	<artifactId>Masker</artifactId>
-	<version>1.2.5</version>
+	<version>1.2.6</version>
 	<name>Masker</name>
 	<description>Whitelist Masker for Text Content</description>
 	<url>https://github.com/IBM/WhitelistMasker</url>
@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>com.github.wnm3</groupId>
 			<artifactId>API4JSON</artifactId>
-			<version>4.0.0</version>
+			<version>4.0.3</version>
 		</dependency>
  	</dependencies>
 	<build>
@@ -132,7 +132,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.3.1</version>
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -234,7 +234,7 @@
 						<id>simple-command</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -1,10 +1,10 @@
 /**
- * (c) Copyright 2020 IBM Corporation
+ * (c) Copyright 2020-2023 IBM Corporation
  * 1 New Orchard Road, 
  * Armonk, New York, 10504-1722
  * United States
  * +1 914 499 1900
- * support: Nathaniel Mills wnm3@us.ibm.com
+ * Nathaniel Mills wnm3@us.ibm.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -1,10 +1,10 @@
 /**
- * (c) Copyright 2020 IBM Corporation
+ * (c) Copyright 2020-2023 IBM Corporation
  * 1 New Orchard Road, 
  * Armonk, New York, 10504-1722
  * United States
  * +1 914 499 1900
- * support: Nathaniel Mills wnm3@us.ibm.com
+ * Nathaniel Mills wnm3@us.ibm.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 
 package com.whitelistmasker.masker;
 
-import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,7 +42,7 @@ import java.util.Vector;
  * provides a formatted date suitable for sorting in the format
  * "yyyy/MM/dd-HH:mm:ss.SSS(Z)"
  */
-public class MaskerDate extends Date implements Cloneable, Serializable {
+public class MaskerDate extends Date {
 
 	/**
 	 * Format for parsing the create date string: 2004/08/04-07:23:15.987(-0400)
@@ -475,7 +474,7 @@ public class MaskerDate extends Date implements Cloneable, Serializable {
 			}
 			} // end switch on month
 			try {
-				int day = new Integer(parts[1].trim());
+				int day = Integer.valueOf(parts[1].trim());
 				newDate += MaskerUtils.padLeftZero(day, 2);
 				newDate += "T";
 			} catch (NumberFormatException nfe) {
@@ -543,7 +542,7 @@ public class MaskerDate extends Date implements Cloneable, Serializable {
 			}
 			} // end switch on month
 			try {
-				int day = new Integer(parts[1].trim());
+				int day = Integer.valueOf(parts[1].trim());
 				newDate += MaskerUtils.padLeftZero(day, 2);
 				newDate += "T";
 			} catch (NumberFormatException nfe) {
@@ -593,7 +592,7 @@ public class MaskerDate extends Date implements Cloneable, Serializable {
 					if (iMSLen > 3) {
 						strMS = strMS.substring(0, 3) + "." + strMS.substring(3);
 					}
-					int imsecs = Math.round(new Float(strMS));
+					int imsecs = Math.round(Float.valueOf(strMS));
 					strMS = MaskerUtils.padRight(imsecs, 3, '0');
 					// rebuild the date string with the 3 digits
 					String strTZ = strDate.substring(iTZOffset);
@@ -611,7 +610,7 @@ public class MaskerDate extends Date implements Cloneable, Serializable {
 					// have ss.SSSS or more
 					String strMS = strDate.substring(iMSOffset + 1);
 					strMS = strMS.substring(0, 3) + "." + strMS.substring(3);
-					int imsecs = Math.round(new Float(strMS));
+					int imsecs = Math.round(Float.valueOf(strMS));
 					strMS = MaskerUtils.padRight(imsecs, 3, '0');
 					// rebuild the date string with the 3 digits
 					strDate = strDate.substring(0, iMSOffset) + strMS;
@@ -851,7 +850,7 @@ public class MaskerDate extends Date implements Cloneable, Serializable {
 		if (iLength >= 5) {
 			strTimeZone = strTimeZoneListEntry.substring(0, 5);
 			try {
-				int iTime = new Integer(strTimeZone).intValue();
+				int iTime = Integer.valueOf(strTimeZone).intValue();
 				if (iTime < -1300 || iTime > 1300) {
 					strTimeZone = "+0000"; // invalid so use GMT
 				}
