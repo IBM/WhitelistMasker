@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>com.github.wnm3</groupId>
 			<artifactId>API4JSON</artifactId>
-			<version>2.0.3</version>
+			<version>4.0.0</version>
 		</dependency>
  	</dependencies>
 	<build>
