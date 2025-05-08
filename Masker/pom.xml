@@ -190,7 +190,7 @@
 					</execution>
 				</executions>
 				<configuration>
-				    <source>8</source>
+				    <source>11</source>
 					<additionalOptions>
 						<additionalOption>-Xdoclint:none</additionalOption>
 					</additionalOptions>
@@ -200,8 +200,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.14.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
 					<additionalClasspathElements>
 					</additionalClasspathElements>
 				</configuration>
@@ -241,4 +241,16 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+		</dependencies>
+	</dependencyManagement>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<properties>
+				<gpg.skip>false</gpg.skip>
+			</properties>
+		</profile>
+	</profiles>
 </project>
