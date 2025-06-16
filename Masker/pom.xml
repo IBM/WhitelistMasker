@@ -28,7 +28,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.whitelistmasker</groupId>
 	<artifactId>Masker</artifactId>
-	<version>1.2.6</version>
+	<version>1.2.7</version>
 	<name>Masker</name>
 	<description>Whitelist Masker for Text Content</description>
 	<url>https://github.com/IBM/WhitelistMasker</url>
@@ -73,7 +73,7 @@
       <dependency>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-databind</artifactId>
-          <version>2.19.0</version>
+          <version>2.19.1</version>
       </dependency> 
 		<dependency>
 			<groupId>com.github.wnm3</groupId>
