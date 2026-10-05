@@ -30,6 +30,24 @@
     <param-name>log4j-config-location</param-name>
     <param-value>WEB-INF/log4j.properties</param-value>
   </context-param>
+  <!-- changing masking policy requires the MaskAdmin role (a MaskAdmin group in server.xml) -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>UpdateMasks</web-resource-name>
+      <url-pattern>/v1/masker/updateMasks</url-pattern>
+      <url-pattern>/v1/masker/updateMasks/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>MaskAdmin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>BasicRealm</realm-name>
+  </login-config>
+  <security-role>
+    <role-name>MaskAdmin</role-name>
+  </security-role>
   <filter>
     <filter-name>CORS</filter-name>
     <filter-class>com.whitelistmasker.services.MaskCORSFilter</filter-class>

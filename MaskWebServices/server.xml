@@ -10,20 +10,24 @@
       <feature>transportSecurity-1.0</feature>
    </featureManager>
 
-   <cors allowCredentials="true" allowedHeaders="accept"
-      allowedMethods="GET, DELETE, POST, PUT"
-      allowedOrigins="*" domain="/MaskWebServices"
-   maxAge="3600" />
+   <!-- CORS is handled by MaskCORSFilter (see MASK_CORS_ALLOWED_ORIGINS) -->
 
    <keyStore id="defaultKeyStore" location="${server.output.dir}/keystore.p12"
       password="{xor}NDomDCswLToPKDs=" />
    <ssl id="defaultSSLConfig" sslProtocol="TLSv1.2" />
 
-   <!-- USER REGISTRIES (using passw0rd) -->
+   <!-- The MaskAdmin user may change masking policy (POST v1/masker/updateMasks).
+   Set its credentials with the MASK_ADMIN_USER and MASK_ADMIN_PASSWORD
+   environment variables (e.g., in server.env or with docker run -e). Liberty
+   grants the MaskAdmin role to members of the group of the same name. If no
+   password is set, the user can not log in and updateMasks is refused. -->
+   <variable name="mask.admin.user" defaultValue="maskadmin" />
+   <variable name="mask.admin.password" defaultValue="" />
    <basicRegistry id="basic" realm="BasicRealm">
-      <user name="mask" password="{xor}Lz4sLCgwLTs=" />
-      <user name="nonadmin" password="{xor}Lz4sLCgwLTs=" />
-      <user name="admin" password="{xor}Lz4sLCgwLTs=" />
+      <user name="${mask.admin.user}" password="${mask.admin.password}" />
+      <group name="MaskAdmin">
+         <member name="${mask.admin.user}" />
+      </group>
    </basicRegistry>
 
    <!-- To access this server from a remote client add a host attribute to 

@@ -23,6 +23,8 @@
 package com.whitelistmasker.services;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -35,11 +37,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Filter to allow cross origin requests
+ * Filter to allow cross origin requests. Any origin may make requests without
+ * credentials. Only origins listed (comma separated) in the
+ * MASK_CORS_ALLOWED_ORIGINS environment variable may make requests with
+ * credentials.
  */
 public class MaskCORSFilter implements Filter {
 
 	static boolean _debug = false;
+	static public final String ALLOWED_ORIGINS_ENV = "MASK_CORS_ALLOWED_ORIGINS";
+	private final Set<String> _allowedOrigins = new HashSet<String>();
 	private final Logger log = LoggerFactory.getLogger(MaskCORSFilter.class);
 
 	/**
@@ -76,12 +83,19 @@ public class MaskCORSFilter implements Filter {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
-		response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+		String origin = request.getHeader("Origin");
 		response.setHeader("Vary", "Origin");
-		response.setHeader("Access-Control-Allow-Credentials", "true");
+		if (origin != null && _allowedOrigins.contains(origin)) {
+			response.setHeader("Access-Control-Allow-Origin", origin);
+			response.setHeader("Access-Control-Allow-Credentials", "true");
+		} else {
+			// never reflect an unknown origin, and never allow it credentials
+			response.setHeader("Access-Control-Allow-Origin", "*");
+		}
 		response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
 		response.setHeader("Access-Control-Max-Age", "3600");
-		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
+		response.setHeader("Access-Control-Allow-Headers",
+				"Content-Type, Accept, Authorization, X-Requested-With, remember-me");
 		chain.doFilter(req, res);
 	}
 
@@ -93,6 +107,15 @@ public class MaskCORSFilter implements Filter {
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) {
+		String allowedOrigins = System.getenv(ALLOWED_ORIGINS_ENV);
+		if (allowedOrigins != null) {
+			for (String origin : allowedOrigins.split(",")) {
+				origin = origin.trim();
+				if (origin.length() > 0) {
+					_allowedOrigins.add(origin);
+				}
+			}
+		}
 	}
 
 }

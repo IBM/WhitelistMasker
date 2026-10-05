@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -40,6 +43,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import com.api.json.JSONArray;
 import com.api.json.JSONObject;
@@ -55,6 +59,13 @@ import com.whitelistmasker.services.Patch.PATCH;
 public class MaskWebServices implements Serializable {
 
 	static public final String ACTIONS = "actions";
+	static public final String ADMIN_ROLE = "MaskAdmin";
+	/**
+	 * Requests that change masking policy and so require the ADMIN_ROLE. This is
+	 * checked here as well as by the security-constraint in web.xml so a URL
+	 * variant the constraint does not match is still refused.
+	 */
+	static public final Set<String> ADMIN_REQUESTS = new HashSet<String>(Arrays.asList("masker/updateMasks"));
 	static final boolean debug = true; // false for no _debug messages
 	static public final String DELETE = "delete";
 	static public final String GET = "get";
@@ -67,6 +78,25 @@ public class MaskWebServices implements Serializable {
 
 	@Inject
 	public ServicesManager _servicesManager;
+
+	@Context
+	SecurityContext _securityContext;
+
+	/**
+	 * Refuse requests that require the ADMIN_ROLE when the caller lacks it
+	 * 
+	 * @param requestType
+	 *                    the topic/type of the request
+	 * @return an error response if the caller is not authorized, otherwise null
+	 */
+	Response checkAuthorized(String requestType) {
+		if (ADMIN_REQUESTS.contains(requestType)
+				&& (_securityContext == null || _securityContext.isUserInRole(ADMIN_ROLE) == false)) {
+			return MaskServiceUtil.getErrorResponse("\"" + requestType + "\" requires the " + ADMIN_ROLE + " role",
+					MaskResponseCodes.Mask_NOT_AUTHORIZED);
+		}
+		return null;
+	}
 
 	/**
 	 * Perform deletion request
@@ -103,6 +133,10 @@ public class MaskWebServices implements Serializable {
 			String requestType = topic;
 			if (MaskerUtils.isUndefined(type) == false) {
 				requestType += "/" + type;
+			}
+			Response notAuthorized = checkAuthorized(requestType);
+			if (notAuthorized != null) {
+				return notAuthorized;
 			}
 			JSONObject serviceLogic = (JSONObject) ServicesManager.deleteRequests.get(requestType);
 			if (serviceLogic == null) {
@@ -206,6 +240,10 @@ public class MaskWebServices implements Serializable {
 		try {
 			URI uri = uriInfo.getAbsolutePath();
 			String path = uri.getPath();
+			Response notAuthorized = checkAuthorized(topic + "/" + type);
+			if (notAuthorized != null) {
+				return notAuthorized;
+			}
 			JSONObject serviceLogic = (JSONObject) ServicesManager.getRequests.get(topic + "/" + type);
 			if (serviceLogic == null) {
 				return MaskServiceUtil.getErrorResponse(
@@ -304,6 +342,10 @@ public class MaskWebServices implements Serializable {
 			if (MaskerUtils.isUndefined(type) == false) {
 				requestType += "/" + type;
 			}
+			Response notAuthorized = checkAuthorized(requestType);
+			if (notAuthorized != null) {
+				return notAuthorized;
+			}
 			JSONObject serviceLogic = (JSONObject) ServicesManager.putRequests.get(requestType);
 			if (serviceLogic == null) {
 				return MaskServiceUtil.getErrorResponse(
@@ -359,6 +401,10 @@ public class MaskWebServices implements Serializable {
 			String requestType = topic;
 			if (MaskerUtils.isUndefined(type) == false) {
 				requestType += "/" + type;
+			}
+			Response notAuthorized = checkAuthorized(requestType);
+			if (notAuthorized != null) {
+				return notAuthorized;
 			}
 			JSONObject serviceLogic = (JSONObject) ServicesManager.postRequests.get(requestType);
 			if (serviceLogic == null) {
@@ -418,6 +464,10 @@ public class MaskWebServices implements Serializable {
 			String requestType = topic;
 			if (MaskerUtils.isUndefined(type) == false) {
 				requestType += "/" + type;
+			}
+			Response notAuthorized = checkAuthorized(requestType);
+			if (notAuthorized != null) {
+				return notAuthorized;
 			}
 			JSONObject serviceLogic = (JSONObject) ServicesManager.putRequests.get(requestType);
 			if (serviceLogic == null) {

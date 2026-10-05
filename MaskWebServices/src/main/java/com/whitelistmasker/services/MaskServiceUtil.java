@@ -111,10 +111,8 @@ public class MaskServiceUtil implements Serializable {
 		JSONObject errorObj = new JSONObject();
 		errorObj.put("error", errorContentsObj);
 		JSONObject ildErrorObj = errorObj;
-		Response resp = Response.status(maskResponseCode.respCode()).header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-				.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Origin", "*").header("Access_Control_Max_Age", 43200)
+		Response resp = Response.status(maskResponseCode.respCode())
+				// CORS headers are set by MaskCORSFilter
 				.entity(ildErrorObj.toString()).type(MediaType.APPLICATION_JSON).build();
 		return resp;
 
@@ -202,10 +200,8 @@ public class MaskServiceUtil implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		Response resp = Response.status(maskResponseCode.respCode()).header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-				.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Origin", "*").header("Access_Control_Max_Age", 43200)
+		Response resp = Response.status(maskResponseCode.respCode())
+				// CORS headers are set by MaskCORSFilter
 				.entity(ildErrorObj.toString()).type(MediaType.APPLICATION_JSON).build();
 		return resp;
 
@@ -221,10 +217,7 @@ public class MaskServiceUtil implements Serializable {
 	public static Response getResponse(JSONObject jsonMessage) {
 		JSONObject respObj = jsonMessage;
 		Response resp = Response.status(MaskResponseCodes.Mask_OKAY.respCode())
-				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-				.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Origin", "*").header("Access_Control_Max_Age", 43200)
+				// CORS headers are set by MaskCORSFilter
 				.entity(respObj.toString()).type(MediaType.APPLICATION_JSON).build();
 		return resp;
 	}

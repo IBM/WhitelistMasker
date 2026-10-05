@@ -54,6 +54,8 @@ public enum MaskResponseCodes {
 			"Mask JSONObject not found", Response.Status.NOT_FOUND), //
 	Mask_METHOD_NOT_FOUND(1008, "METHOD_NOT_FOUND", //
 			"Method not found", Response.Status.BAD_REQUEST), //
+	Mask_NOT_AUTHORIZED(1016, "NOT_AUTHORIZED", //
+			"Not authorized", Response.Status.FORBIDDEN), //
 	Mask_OKAY(1000, "Mask_OKAY", //
 			"Okay", Response.Status.OK), //
 	Mask_SERVICE_NOT_FOUND(1012, "INVALID_SERVICE_NAME", //
