@@ -30,7 +30,7 @@ Execute these scripts to copy the war  file into the servers dropins directory, 
 This results in a maskwebservices.tar.gz file. To install this in docker do the following:
   1. gunzip maskwebservices.tar.gz
   2. docker load -i maskwebservices.tar
-  3. docker run --publish 9080:9080 --detach --name masker maskerwebservices
+  3. docker run --publish 9080:9080 --detach --name masker -e MASK_ADMIN_USER=&lt;user&gt; -e MASK_ADMIN_PASSWORD=&lt;password&gt; maskerwebservices
 
 Note: you can also use the -v option to load an external properties directory into the container making it easier to change the data and load it by stopping and starting the container
 
@@ -47,6 +47,25 @@ To remove the image:
    
 ### Access Docker Container from Docker Hub ###
 The public image is found at https://hub.docker.com/r/wnmills3/maskerwebservices and is identified as wnmills3/maskerwebservices:1.2.7
+
+### Security ###
+`POST v1/masker/updateMasks` changes the masking templates of a tenant for every later request, so it requires HTTP BASIC
+authentication as a member of the `MaskAdmin` group defined in server.xml. Set the credentials of that user with the
+environment variables:
+  - `MASK_ADMIN_USER` (defaults to `maskadmin`)
+  - `MASK_ADMIN_PASSWORD` (no default; if it is not set no user can authenticate and updateMasks is refused)
+
+Serve the application over HTTPS (port 9980) when sending credentials. `doMasking` and `doMessageMasking` do not
+require authentication.
+
+Cross-origin browser requests are allowed from any origin without credentials. To allow credentialed requests from
+specific origins, list them comma separated in the `MASK_CORS_ALLOWED_ORIGINS` environment variable.
+
+Mask labels (the `mask` of a template) may only contain letters and digits.
+
+Applying templates to a line is limited to one second (`Masker._templateTimeoutMillis`) so a template whose regex
+backtracks catastrophically can not tie up the server. A line that runs out of time is returned as `~misc~` and an
+error is reported, so it is never returned partially masked.
 
 ### Testing ###
 In a browser, you can access the server's URL like:
